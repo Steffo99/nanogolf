@@ -22,10 +22,10 @@ Le partite saranno organizzate a stanze, seguendo il modello client-server:
 8. la partita inizia
 
 Si rende infine noto che:
-- le palline dei giocatori dovranno essere sempre visibili, anche mentre sono in movimento
+- le palline dei giocatori saranno sempre visibili, anche mentre sono in movimento
 	- non è necessario che il movimento venga riprodotto con precisione perfetta sui client remoti
 	- si preferisce che la posizione delle palline dei client remoti sia aggiornata con latenza minima
-- i percorsi saranno predeterminati
+- i percorsi sono predeterminati
 	- si potrebbe considerare di strutturare il codice in modo tale che i percorsi vengano distribuiti a runtime dal server ai client, in modo da permettere una futura estensione che permetta ai giocatori di creare e giocare percorsi personalizzati
-- si assume che il giocatore che crea la stanza sia direttamente raggiungibile da Internet
-	- non è necessario implementare meccanismi a livello applicazione per effettuare NAT traversal
+- si assume che i giocatori che creano stanze siano direttamente raggiungibili da Internet
+	- non è necessario implementare meccanismi per effettuare NAT traversal
