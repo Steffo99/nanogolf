@@ -1,0 +1,32 @@
+[gd_resource type="TileSet" load_steps=7 format=3 uid="uid://17esn8g8xqik"]
+
+[ext_resource type="Texture2D" uid="uid://b3yvm0k0ajydg" path="res://sprites/diag45.svg" id="2_dv6qu"]
+[ext_resource type="Texture2D" uid="uid://dvr4j6164rphg" path="res://sprites/square.svg" id="3_3cg8j"]
+[ext_resource type="Texture2D" uid="uid://ci6vx1y2x1067" path="res://sprites/triangle.svg" id="4_0vvt5"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_174yq"]
+texture = ExtResource("2_dv6qu")
+0:0/0 = 0
+0:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+0:0/0/physics_layer_0/angular_velocity = 0.0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, -8, 8)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2md10"]
+texture = ExtResource("3_3cg8j")
+0:0/0 = 0
+0:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+0:0/0/physics_layer_0/angular_velocity = 0.0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_mbu12"]
+texture = ExtResource("4_0vvt5")
+0:0/0 = 0
+0:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+0:0/0/physics_layer_0/angular_velocity = 0.0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 0, 8)
+
+[resource]
+physics_layer_0/collision_layer = 1
+sources/1 = SubResource("TileSetAtlasSource_174yq")
+sources/2 = SubResource("TileSetAtlasSource_2md10")
+sources/3 = SubResource("TileSetAtlasSource_mbu12")
