@@ -14,8 +14,9 @@ point_count = 2
 visible = false
 modulate = Color(1, 1, 1, 0.25098)
 script = ExtResource("1_ldg2x")
-putt_max_impulse = 300.0
+putt_max_impulse = 333.0
 putt_drag_scale = 1.0
+putt_ghost_scale = 0.3
 putt_volume = SubResource("Curve_pq63d")
 
 [node name="Sprite" type="Sprite2D" parent="."]

@@ -5,6 +5,8 @@ class_name PuttController
 @export var putt_max_impulse: float
 ## How many game units a pixel of screen mouse movement corresponds to. 
 @export var putt_drag_scale: float
+## Length multiplier of the putt ghost
+@export var putt_ghost_scale: float
 ## Curve mapping relative putt impulse to putt sound volume.
 @export var putt_volume: Curve
 ## Emitted when a putt has happened.
@@ -48,8 +50,8 @@ func _input(event: InputEvent):
 
 func update_putt_ghost(putt_vector: Vector2):
 	sprite.rotation = putt_vector.angle()
-	sprite.scale.x = putt_vector.length() / sprite_texture_width
-	sprite.position = position - putt_vector * 0.5
+	sprite.scale.x = putt_vector.length() * putt_ghost_scale / sprite_texture_width
+	sprite.position = position - putt_vector * putt_ghost_scale * 0.5
 
 
 func compute_putt(start_position: Vector2, end_position: Vector2) -> Vector2:
