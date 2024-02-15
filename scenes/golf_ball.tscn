@@ -1,0 +1,37 @@
+[gd_scene load_steps=7 format=3 uid="uid://ca06elq8io5wu"]
+
+[ext_resource type="Script" path="res://scenes/GolfBall.gd" id="1_cnerg"]
+[ext_resource type="Texture2D" uid="uid://bxyy3bwt7a5l2" path="res://sprites/circle.svg" id="2_mqlag"]
+[ext_resource type="PackedScene" uid="uid://cu03w8wxnkffb" path="res://scenes/putt_controller.tscn" id="3_rx2v7"]
+[ext_resource type="PackedScene" uid="uid://cj15ash4r3i4v" path="res://scenes/collision_sound.tscn" id="4_6m2yp"]
+
+[sub_resource type="Curve" id="Curve_v81ms"]
+min_value = -20.0
+max_value = 0.0
+_data = [Vector2(0, -20), 0.0, 20.0, 0, 1, Vector2(1, 0), 20.0, 0.0, 1, 0]
+point_count = 2
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_3vk3q"]
+radius = 8.0
+
+[node name="GolfBall" type="CharacterBody2D"]
+position = Vector2(146, 142)
+motion_mode = 1
+wall_min_slide_angle = 0.0
+script = ExtResource("1_cnerg")
+physics_friction = 1.0
+physics_max_bounces = 4.0
+physics_bounce_coefficient = 0.4
+collision_sound = ExtResource("4_6m2yp")
+collision_volume_db = SubResource("Curve_v81ms")
+collision_volume_max_velocity = 150.0
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_mqlag")
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_3vk3q")
+
+[node name="PuttController" parent="." instance=ExtResource("3_rx2v7")]
+
+[connection signal="putt" from="PuttController" to="." method="_on_putt"]
