@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://cu03w8wxnkffb"]
 
-[ext_resource type="Script" path="res://scenes/PuttController.gd" id="1_ldg2x"]
+[ext_resource type="Script" path="res://scenes/putt_controller.gd" id="1_rb6v1"]
 [ext_resource type="Texture2D" uid="uid://dvr4j6164rphg" path="res://sprites/square.svg" id="2_eblkx"]
 [ext_resource type="AudioStream" uid="uid://clm7wapsnjjlp" path="res://sounds/putt.wav" id="3_0eren"]
 
@@ -13,7 +13,7 @@ point_count = 2
 [node name="PuttController" type="Node2D"]
 visible = false
 modulate = Color(1, 1, 1, 0.25098)
-script = ExtResource("1_ldg2x")
+script = ExtResource("1_rb6v1")
 putt_max_impulse = 333.0
 putt_drag_scale = 1.0
 putt_ghost_scale = 0.3

@@ -1,9 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://ca06elq8io5wu"]
+[gd_scene load_steps=10 format=3 uid="uid://ca06elq8io5wu"]
 
-[ext_resource type="Script" path="res://scenes/GolfBall.gd" id="1_cnerg"]
+[ext_resource type="Script" path="res://scenes/golf_ball.gd" id="1_1uswk"]
 [ext_resource type="Texture2D" uid="uid://bxyy3bwt7a5l2" path="res://sprites/circle.svg" id="2_mqlag"]
 [ext_resource type="PackedScene" uid="uid://cu03w8wxnkffb" path="res://scenes/putt_controller.tscn" id="3_rx2v7"]
 [ext_resource type="PackedScene" uid="uid://cj15ash4r3i4v" path="res://scenes/collision_sound.tscn" id="4_6m2yp"]
+[ext_resource type="PackedScene" uid="uid://bf0a04t4b1wil" path="res://scenes/hole_controller.tscn" id="5_tdklt"]
+[ext_resource type="AudioStream" uid="uid://crfybmbv6dbs4" path="res://sounds/hole.wav" id="6_08dpq"]
 
 [sub_resource type="Curve" id="Curve_v81ms"]
 min_value = -20.0
@@ -14,12 +16,14 @@ point_count = 2
 [sub_resource type="CircleShape2D" id="CircleShape2D_3vk3q"]
 radius = 8.0
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_aigrf"]
+radius = 1.41421
+
 [node name="GolfBall" type="CharacterBody2D"]
-position = Vector2(146, 142)
 motion_mode = 1
 wall_min_slide_angle = 0.0
-script = ExtResource("1_cnerg")
-physics_friction = 1.0
+script = ExtResource("1_1uswk")
+physics_friction = 60.0
 physics_max_bounces = 4.0
 physics_bounce_coefficient = 0.65
 collision_sound = ExtResource("4_6m2yp")
@@ -31,7 +35,17 @@ texture = ExtResource("2_mqlag")
 
 [node name="Shape" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_3vk3q")
+debug_color = Color(0, 0.6, 0.701961, 0.419608)
 
 [node name="PuttController" parent="." instance=ExtResource("3_rx2v7")]
+
+[node name="HoleController" parent="." instance=ExtResource("5_tdklt")]
+
+[node name="Shape" type="CollisionShape2D" parent="HoleController"]
+shape = SubResource("CircleShape2D_aigrf")
+debug_color = Color(0, 0.701961, 0.141176, 0.419608)
+
+[node name="HoleSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("6_08dpq")
 
 [connection signal="putt" from="PuttController" to="." method="_on_putt"]

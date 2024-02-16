@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://df7t70153a3bb"]
+
+[ext_resource type="Script" path="res://scenes/golf_hole.gd" id="1_7ng0k"]
+[ext_resource type="Texture2D" uid="uid://bxyy3bwt7a5l2" path="res://sprites/circle.svg" id="1_dw1g4"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_c8ayt"]
+radius = 8.0
+
+[node name="GolfHole" type="Area2D"]
+scale = Vector2(1.05, 1.05)
+script = ExtResource("1_7ng0k")
+
+[node name="Circle" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 0.25098)
+texture = ExtResource("1_dw1g4")
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_c8ayt")
+debug_color = Color(0, 0.701961, 0.141176, 0.419608)

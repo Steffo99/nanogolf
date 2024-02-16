@@ -14,15 +14,27 @@ class_name GolfBall
 @export var collision_volume_db: Curve
 ## The velocity at which the maximum volume of [member collision_volume_db] is played.
 @export var collision_volume_max_velocity: float
+## Emitted when the ball enters the hole.
+signal entered_hole(strokes: int)
+
+## How many strokes have been performed so far.
+var strokes: int = 0
+## Whether the ball has entered the hole.
+var in_hole: bool = false
 
 @onready var putt_controller: PuttController = $"PuttController"
+@onready var hole_controller: HoleController = $"HoleController"
+@onready var hole_sound: AudioStreamPlayer2D = $"HoleSound"
 
 
 func _on_putt(putt_vector: Vector2):
+	strokes += 1
 	velocity += putt_vector
 
 
-func do_movement(movement: Vector2):
+func do_movement(delta: float):
+	# How much the body should move in this physics step.
+	var movement = velocity * delta
 	# How many times the body collided in the current physics step.
 	var bounces: int = 0
 	# While the body should still move some space, and it isn't stuck in a perpetual loop of bouncing...
@@ -40,7 +52,6 @@ func do_movement(movement: Vector2):
 		if bounces == 1:
 			# Determine with how much speed the body collided
 			var collision_velocity = -collision_normal.dot(velocity)
-			print(collision_velocity)
 			# Create a new sound instance
 			var collision_sound_instance: AudioStreamPlayer2D = collision_sound.instantiate()
 			# Set the sound volume based on the relative collision velocity
@@ -58,9 +69,32 @@ func do_movement(movement: Vector2):
 		velocity *= physics_bounce_coefficient
 
 
-func _physics_process(delta):
-	do_movement(velocity * delta)
-	var new_velocity_length = max(0.0, velocity.length() - physics_friction)
+func apply_friction(delta):
+	var new_velocity_length = max(0.0, velocity.length() - physics_friction * delta)
 	velocity = velocity.normalized() * new_velocity_length
-	if new_velocity_length == 0.0:
-		putt_controller.can_putt = true
+
+
+func check_has_stopped() -> bool:
+	return velocity.length() == 0.0
+
+
+func check_has_entered_hole() -> bool:
+	return check_has_stopped() and hole_controller.over_hole
+
+
+func enter_hole():
+	in_hole = true
+	visible = false
+	hole_sound.play()
+	entered_hole.emit(strokes)
+	print("[GolfBall] Entered hole in: ", strokes)
+
+
+func _physics_process(delta):
+	if not in_hole:
+		do_movement(delta)
+		apply_friction(delta)
+		if check_has_entered_hole():
+			enter_hole()
+		if check_has_stopped():
+			putt_controller.can_putt = true

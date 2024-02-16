@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://bf0a04t4b1wil"]
+
+[ext_resource type="Script" path="res://scenes/hole_controller.gd" id="1_df7lg"]
+
+[node name="HoleController" type="Area2D"]
+script = ExtResource("1_df7lg")
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]
+[connection signal="area_exited" from="." to="." method="_on_area_exited"]

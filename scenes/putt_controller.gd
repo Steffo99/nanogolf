@@ -35,12 +35,12 @@ func _input(event: InputEvent):
 				if not is_putting:
 					start_putt(event.position)
 				else:
-					push_warning("[PuttController] Attempted to start putt while another was in progress.")
+					push_warning("Attempted to start putt while another was in progress.")
 			else:
 				if is_putting:
 					end_putt(event.position)
 				else:
-					push_warning("[PuttController] Attempted to end putt while none was in progress.")
+					push_warning("Attempted to end putt while none was in progress.")
 			if is_putting:
 				update_putt_ghost(compute_putt(event.position, putt_start_point))
 		if event is InputEventMouseMotion:
@@ -63,19 +63,16 @@ func compute_putt(start_position: Vector2, end_position: Vector2) -> Vector2:
 
 
 func start_putt(start_position: Vector2):
-	print("[PuttController] Starting putt at: ", start_position)
 	visible = true
 	is_putting = true
 	putt_start_point = start_position
 
 
 func end_putt(end_position: Vector2):
-	print("[PuttController] Ending putt at: ", end_position)
 	visible = false
 	is_putting = false
 	can_putt = false
 	var putt_vector = compute_putt(putt_start_point, end_position)
-	print("[PuttController] Putt is: ", putt_vector)
 	putt.emit(putt_vector)
 	play_putt_sound(putt_vector)
 
