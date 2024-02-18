@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3 uid="uid://dtwi2nyjbvr82"]
+
+[ext_resource type="Script" path="res://scenes/interface.gd" id="1_e3sp8"]
+
+[node name="Interface" type="MarginContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_e3sp8")
+min_margin_left = 16
+min_margin_right = 16
+min_margin_top = 16
+min_margin_bottom = 16

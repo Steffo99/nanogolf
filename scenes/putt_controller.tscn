@@ -20,6 +20,7 @@ putt_ghost_scale = 0.3
 putt_volume = SubResource("Curve_pq63d")
 
 [node name="Sprite" type="Sprite2D" parent="."]
+scale = Vector2(0.063, 0.063)
 texture = ExtResource("2_eblkx")
 
 [node name="Sound" type="AudioStreamPlayer2D" parent="."]

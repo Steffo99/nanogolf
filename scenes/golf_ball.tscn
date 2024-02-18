@@ -14,10 +14,10 @@ _data = [Vector2(0, -20), 0.0, 20.0, 0, 1, Vector2(1, 0), 20.0, 0.0, 1, 0]
 point_count = 2
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_3vk3q"]
-radius = 8.0
+radius = 4.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_aigrf"]
-radius = 1.41421
+radius = 1.0
 
 [node name="GolfBall" type="CharacterBody2D"]
 motion_mode = 1
@@ -31,6 +31,7 @@ collision_volume_db = SubResource("Curve_v81ms")
 collision_volume_max_velocity = 150.0
 
 [node name="Sprite" type="Sprite2D" parent="."]
+scale = Vector2(0.063, 0.063)
 texture = ExtResource("2_mqlag")
 
 [node name="Shape" type="CollisionShape2D" parent="."]

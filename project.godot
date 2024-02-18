@@ -11,9 +11,22 @@ config_version=5
 [application]
 
 config/name="Nanogolf"
-run/main_scene="res://scenes/main.tscn"
+run/main_scene="res://scenes/golf_level_2.tscn"
 config/features=PackedStringArray("4.2", "Mobile")
 config/icon="res://icon.svg"
+
+[display]
+
+window/size/viewport_width=272
+window/size/viewport_height=480
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/handheld/orientation=1
+
+[physics]
+
+common/physics_ticks_per_second=300
+common/max_physics_steps_per_frame=15
 
 [rendering]
 
