@@ -1,0 +1,46 @@
+[gd_scene load_steps=2 format=3 uid="uid://45s3mrhd7rlr"]
+
+[ext_resource type="Script" path="res://scenes/server_options_menu.gd" id="1_omevw"]
+
+[node name="ServerOptionsMenu" type="PanelContainer"]
+offset_right = 264.0
+offset_bottom = 179.0
+script = ExtResource("1_omevw")
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="PaddingStart" type="Control" parent="Layout"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
+[node name="Title" type="RichTextLabel" parent="Layout"]
+layout_mode = 2
+bbcode_enabled = true
+text = "[center][b]Connettiti ad altri giocatori[/b][/center]"
+fit_content = true
+
+[node name="PaddingMiddle1" type="Control" parent="Layout"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
+[node name="HostButton" type="Button" parent="Layout"]
+layout_mode = 2
+text = "Avvia server"
+
+[node name="Label" type="Label" parent="Layout"]
+layout_mode = 2
+text = "oppure"
+horizontal_alignment = 1
+
+[node name="LineEdit" type="LineEdit" parent="Layout"]
+layout_mode = 2
+placeholder_text = "127.0.0.1"
+
+[node name="ConnectButton" type="Button" parent="Layout"]
+layout_mode = 2
+text = "Connettiti al server"
+
+[connection signal="pressed" from="Layout/HostButton" to="." method="_on_host_button_pressed"]
+[connection signal="text_changed" from="Layout/LineEdit" to="." method="_on_line_edit_text_changed"]
+[connection signal="pressed" from="Layout/ConnectButton" to="." method="_on_connect_button_pressed"]

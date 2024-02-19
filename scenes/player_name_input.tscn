@@ -1,0 +1,32 @@
+[gd_scene load_steps=2 format=3 uid="uid://dft2vgh1e3nwq"]
+
+[ext_resource type="Script" path="res://scenes/player_name_input.gd" id="1_c0ws4"]
+
+[node name="PlayerNameInput" type="PanelContainer"]
+offset_right = 264.0
+offset_bottom = 105.0
+script = ExtResource("1_c0ws4")
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Title" type="RichTextLabel" parent="Layout"]
+layout_mode = 2
+bbcode_enabled = true
+text = "[center][b]Inserisci il tuo nome[/b][/center]"
+fit_content = true
+
+[node name="LineEdit" type="LineEdit" parent="Layout"]
+layout_mode = 2
+placeholder_text = "Garasino Garasotti"
+
+[node name="PaddingEnd" type="Control" parent="Layout"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
+[node name="Button" type="Button" parent="Layout"]
+layout_mode = 2
+text = "Conferma"
+
+[connection signal="text_submitted" from="Layout/LineEdit" to="." method="_on_line_edit_text_submitted"]
+[connection signal="pressed" from="Layout/Button" to="." method="_on_button_pressed"]
