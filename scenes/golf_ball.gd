@@ -25,6 +25,24 @@ var in_hole: bool = false
 @onready var putt_controller: PuttController = $"PuttController"
 @onready var hole_controller: HoleController = $"HoleController"
 @onready var hole_sound: AudioStreamPlayer2D = $"HoleSound"
+@onready var player_label: Label = $"PlayerLabel"
+
+
+## The name of the player represented by this scene.
+var player_name: String = "Player":
+	get:
+		return player_name
+	set(value):
+		player_name = value
+		player_label.text = value
+		
+## The color of the player represented by this scene.
+var player_color: Color = Color.WHITE:
+	get:
+		return player_color
+	set(value):
+		player_color = value
+		modulate = value
 
 
 func _on_putt(putt_vector: Vector2):
