@@ -2,6 +2,10 @@ extends Control
 class_name MainMenu
 
 
+signal room_created(server: ENetMultiplayerPeer, client: ENetMultiplayerPeer)
+signal room_joined(client: ENetMultiplayerPeer)
+
+
 enum MenuStage {
 	NAME_INPUT = 1,
 	COLOR_PICKER = 2,
@@ -83,12 +87,16 @@ func deinit_server_menu():
 	server_menu_instance.queue_free()
 
 func _on_hosting_confirmed(port: int):
-	push_warning("TODO")
-	current_stage = MenuStage.NAME_INPUT
+	var server = ENetMultiplayerPeer.new()
+	server.create_server(port)
+	var client = ENetMultiplayerPeer.new()
+	client.create_client("127.0.0.1", port)
+	room_created.emit(server, client)
 
 func _on_connecting_confirmed(address: String, port: int):
-	push_warning("TODO")
-	current_stage = MenuStage.NAME_INPUT
+	var client = ENetMultiplayerPeer.new()
+	client.create_client(address, port)
+	room_joined.emit(client)
 
 
 func _ready():

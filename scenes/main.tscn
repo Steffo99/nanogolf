@@ -1,13 +1,11 @@
 [gd_scene load_steps=4 format=3 uid="uid://b8f5t76nfdu5h"]
 
+[ext_resource type="Script" path="res://scenes/main.gd" id="1_a2cl7"]
 [ext_resource type="PackedScene" uid="uid://dtwi2nyjbvr82" path="res://scenes/interface.tscn" id="1_bd856"]
 [ext_resource type="Theme" uid="uid://mau3moiintkp" path="res://themes/nanogolf_theme.tres" id="2_oe7am"]
-[ext_resource type="PackedScene" uid="uid://c3lhhndbdq67s" path="res://scenes/main_menu.tscn" id="3_3lx7u"]
 
 [node name="Main" type="Node"]
+script = ExtResource("1_a2cl7")
 
 [node name="Interface" parent="." instance=ExtResource("1_bd856")]
 theme = ExtResource("2_oe7am")
-
-[node name="MainMenu" parent="Interface" instance=ExtResource("3_3lx7u")]
-layout_mode = 2
