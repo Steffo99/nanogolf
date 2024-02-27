@@ -32,17 +32,3 @@ var player_color: Color = Color.WHITE
 
 ## This player's score, with an item per hole played.
 var strokes_per_hole: Array[int] = []
-
-
-func _ready():
-	replication_config = SceneReplicationConfig.new()
-	replication_config.add_property(^".:peer_id")
-	replication_config.property_set_replication_mode(^".:peer_id", SceneReplicationConfig.ReplicationMode.REPLICATION_MODE_ON_CHANGE)
-	replication_config.add_property(^".:peer_connected")
-	replication_config.property_set_replication_mode(^".:peer_connected", SceneReplicationConfig.ReplicationMode.REPLICATION_MODE_ON_CHANGE)
-	replication_config.add_property(^".:player_name")
-	replication_config.property_set_replication_mode(^".:player_name", SceneReplicationConfig.ReplicationMode.REPLICATION_MODE_ON_CHANGE)
-	replication_config.add_property(^".:player_color")
-	replication_config.property_set_replication_mode(^".:player_color", SceneReplicationConfig.ReplicationMode.REPLICATION_MODE_ON_CHANGE)
-	replication_config.add_property(^".:strokes_per_hole")
-	replication_config.property_set_replication_mode(^".:strokes_per_hole", SceneReplicationConfig.ReplicationMode.REPLICATION_MODE_ON_CHANGE)

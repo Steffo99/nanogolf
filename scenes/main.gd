@@ -37,7 +37,7 @@ func init_server_game(server_port: int):
 		push_error(error)
 		return
 	
-	scene_tree.set_multiplayer(multiplayer, ^"/root/Main/Server")
+	scene_tree.set_multiplayer(smp, ^"/root/Main/Server")
 	smp.set_multiplayer_peer(peer)
 
 func deinit_server_game():
@@ -79,7 +79,7 @@ func _ready():
 func _on_hosting_confirmed(player_name: String, player_color: Color, server_port: int):
 	deinit_main_menu()
 	init_server_game(server_port)
-	init_client_game(player_name, player_color, "127.0.0.1", server_port)
+	# init_client_game(player_name, player_color, "127.0.0.1", server_port)
 
 func _on_connecting_confirmed(player_name: String, player_color: Color, server_address: String, server_port: int):
 	deinit_main_menu()
