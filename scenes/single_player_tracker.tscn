@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://drccgvtcng3ju"]
+
+[ext_resource type="Script" path="res://scenes/single_player_tracker.gd" id="1_jwlkv"]
+
+[node name="SinglePlayerTracker" type="MultiplayerSynchronizer"]
+root_path = NodePath(".")
+script = ExtResource("1_jwlkv")

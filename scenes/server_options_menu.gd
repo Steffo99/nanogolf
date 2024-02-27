@@ -2,7 +2,7 @@ extends PanelContainer
 class_name ServerOptionsMenu
 
 
-@export var port: int = 27015
+@export var port: int = 12345
 
 signal hosting_confirmed(port: int)
 signal connecting_confirmed(address: String, port: int)

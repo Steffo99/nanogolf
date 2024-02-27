@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://cwj0fyj6obj6r"]
+
+[ext_resource type="Script" path="res://scenes/multiple_players_tracker.gd" id="1_fxysy"]
+
+[node name="MultiplePlayersTracker" type="MultiplayerSpawner"]
+_spawnable_scenes = PackedStringArray("res://scenes/single_player_tracker.tscn")
+spawn_path = NodePath(".")
+spawn_limit = 32
+script = ExtResource("1_fxysy")
