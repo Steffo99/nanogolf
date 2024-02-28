@@ -1,0 +1,43 @@
+[gd_scene load_steps=3 format=3 uid="uid://cxpn0653ssa53"]
+
+[ext_resource type="Script" path="res://scenes/lobby_menu.gd" id="1_egicy"]
+[ext_resource type="PackedScene" uid="uid://cpyclix18d3it" path="res://scenes/players_list.tscn" id="2_o2f1d"]
+
+[node name="LobbyMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_egicy")
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="RichTextLabel" parent="Layout"]
+layout_mode = 2
+bbcode_enabled = true
+text = "[center][font_size=32px][b]Nanogolf[/b][/font_size]
+Stanza multigiocatore[/center]"
+fit_content = true
+
+[node name="Padding" type="Control" parent="Layout"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+
+[node name="PlayersList" parent="Layout" instance=ExtResource("2_o2f1d")]
+layout_mode = 2
+
+[node name="Padding2" type="Control" parent="Layout"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+
+[node name="Button" type="Button" parent="Layout"]
+layout_mode = 2
+text = "Avvia partita"

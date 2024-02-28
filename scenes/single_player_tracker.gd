@@ -1,28 +1,12 @@
-extends MultiplayerSynchronizer
+extends Node
 class_name SinglePlayerTracker
 
-## Emitted when the peer represented by this object connects.
-signal peer_has_connected
 
-## Emitted when the peer represented by this object connects.
-signal peer_has_disconnected
+signal identity_updated(player_name: String, player_color: Color)
 
-
-## The peer ID that this object represents.
-var peer_id: int = 0
 
 ## Whether the peer is connected or not.
-var peer_connected: bool = false:
-	get:
-		return peer_connected
-	set(value):
-		var pvalue = peer_connected
-		peer_connected = value
-		if value != pvalue:
-			if value:
-				peer_has_connected.emit()
-			else:
-				peer_has_disconnected.emit()
+var peer_connected: bool = true
 
 ## The player's name.
 var player_name: String = "Player"
@@ -32,3 +16,14 @@ var player_color: Color = Color.WHITE
 
 ## This player's score, with an item per hole played.
 var strokes_per_hole: Array[int] = []
+
+
+@rpc("authority", "call_local", "reliable")
+func update_identity(new_player_name: String, new_player_color: Color):
+	player_name = new_player_name
+	player_color = new_player_color
+	identity_updated.emit(player_name, player_color)
+
+func notify_identity(peer_id: int):
+	Log.peer(self, "Notifying of our identity: " + str(peer_id))
+	update_identity.rpc_id(peer_id, player_name, player_color)

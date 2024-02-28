@@ -12,6 +12,8 @@ const game_scene: PackedScene = preload("res://scenes/game.tscn")
 var server_game_instance: Game = null
 var client_game_instance: Game = null
 
+const lobby_menu_scene: PackedScene = preload("res://scenes/lobby_menu.tscn")
+var lobby_menu_instance: LobbyMenu = null
 
 func init_main_menu():
 	main_menu_instance = main_menu_scene.instantiate()
@@ -27,8 +29,6 @@ func init_server_game(server_port: int):
 	server_game_instance.name = "Server"
 	add_child(server_game_instance, true)
 	
-	server_game_instance.init_signals()
-	
 	print("[Main] Creating server at: *:", server_port)
 	var smp: SceneMultiplayer = SceneMultiplayer.new()
 	var peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
@@ -38,6 +38,7 @@ func init_server_game(server_port: int):
 		return
 	
 	scene_tree.set_multiplayer(smp, ^"/root/Main/Server")
+	server_game_instance.init_signals()
 	smp.set_multiplayer_peer(peer)
 
 func deinit_server_game():
@@ -52,8 +53,6 @@ func init_client_game(player_name: String, player_color: Color, server_address: 
 	client_game_instance.name = "Client"
 	add_child(client_game_instance, true)
 	
-	client_game_instance.init_signals()
-	
 	print("[Main] Creating client connecting to: ", server_address, ":", server_port)
 	var smp = SceneMultiplayer.new()
 	var peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
@@ -63,6 +62,8 @@ func init_client_game(player_name: String, player_color: Color, server_address: 
 		return
 	
 	scene_tree.set_multiplayer(smp, ^"/root/Main/Client")
+	client_game_instance.init_signals()
+	client_game_instance.init_identity(player_name, player_color)
 	smp.set_multiplayer_peer(peer)
 
 func deinit_client_game():
@@ -72,6 +73,12 @@ func deinit_client_game():
 	scene_tree.set_multiplayer(multiplayer, ^"/root/Main/Client")
 	client_game_instance.queue_free()
 
+func init_lobby_menu():
+	lobby_menu_instance = lobby_menu_scene.instantiate()
+	interface_instance.add_child(lobby_menu_instance)
+
+func deinit_lobby_menu():
+	lobby_menu_instance.queue_free()
 
 func _ready():
 	init_main_menu()
@@ -79,8 +86,12 @@ func _ready():
 func _on_hosting_confirmed(player_name: String, player_color: Color, server_port: int):
 	deinit_main_menu()
 	init_server_game(server_port)
-	# init_client_game(player_name, player_color, "127.0.0.1", server_port)
+	init_client_game(player_name, player_color, "127.0.0.1", server_port)
+	init_lobby_menu()
+	client_game_instance.trackers_changed.connect(lobby_menu_instance._on_trackers_changed)
 
 func _on_connecting_confirmed(player_name: String, player_color: Color, server_address: String, server_port: int):
 	deinit_main_menu()
 	init_client_game(player_name, player_color, server_address, server_port)
+	init_lobby_menu()
+	client_game_instance.trackers_changed.connect(lobby_menu_instance._on_trackers_changed)

@@ -35,6 +35,7 @@ horizontal_alignment = 1
 
 [node name="LineEdit" type="LineEdit" parent="Layout"]
 layout_mode = 2
+text = "127.0.0.1"
 placeholder_text = "127.0.0.1"
 
 [node name="ConnectButton" type="Button" parent="Layout"]
@@ -42,5 +43,4 @@ layout_mode = 2
 text = "Connettiti al server"
 
 [connection signal="pressed" from="Layout/HostButton" to="." method="_on_host_button_pressed"]
-[connection signal="text_changed" from="Layout/LineEdit" to="." method="_on_line_edit_text_changed"]
 [connection signal="pressed" from="Layout/ConnectButton" to="." method="_on_connect_button_pressed"]

@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://dbj7jomrsn41h"]
+
+[ext_resource type="Script" path="res://scenes/player_label.gd" id="1_p6mii"]
+
+[node name="PlayerLabel" type="Label"]
+text = "Player"
+script = ExtResource("1_p6mii")

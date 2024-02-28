@@ -7,3 +7,6 @@
 script = ExtResource("1_cdtng")
 
 [node name="MultiplePlayersTracker" parent="." instance=ExtResource("2_f2gy2")]
+
+[connection signal="spawned" from="MultiplePlayersTracker" to="." method="_on_single_player_tracker_spawned"]
+[connection signal="trackers_changed" from="MultiplePlayersTracker" to="." method="_on_trackers_changed"]

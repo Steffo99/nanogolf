@@ -2,6 +2,15 @@ extends Node
 class_name Game
 
 
+signal trackers_changed(trackers: Dictionary)
+
+func _on_trackers_changed(trackers: Dictionary):
+	trackers_changed.emit(trackers)
+
+
+@onready var mp_tracker: MultiplePlayersTracker = $"MultiplePlayersTracker"
+
+
 # This cannot be called in _ready because the multiplayer node is set *after* adding the node to the tree.
 func init_signals():
 	print("[Game] Initializing signals...")
@@ -12,17 +21,43 @@ func init_signals():
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 
 
+var local_player_name: String = "Player"
+var local_player_color: Color = Color.WHITE
+
+func init_identity(player_name: String, player_color: Color):
+	local_player_name = player_name
+	local_player_color = player_color
+	
+
 func _on_connected_to_server():
-	print("{", multiplayer.multiplayer_peer.get_unique_id(), "} Connected to server!")
+	Log.peer(self, "Connected to server!")
 
 func _on_server_disconnected():
-	print("{", multiplayer.multiplayer_peer.get_unique_id(), "} Server disconnected...")
+	Log.peer(self, "Server disconnected...")
 
 func _on_connection_failed():
-	print("{", multiplayer.multiplayer_peer.get_unique_id(), "} Connection failed...")
+	Log.peer(self, "Connection failed...")
 
 func _on_peer_connected(peer_id: int):
-	print("{", multiplayer.multiplayer_peer.get_unique_id(), "} Peer connected: ", peer_id)
+	Log.peer(self, "Peer connected: " + str(peer_id))
+	if multiplayer.is_server():
+		assert(peer_id != 1, "This is a server, but the remote peer_id is 1.")
+		Log.peer(self, "Initializing tracker for: " + str(peer_id))
+		mp_tracker.spawn(peer_id)
 
 func _on_peer_disconnected(peer_id: int):
-	print("{", multiplayer.multiplayer_peer.get_unique_id(), "} Peer disconnected: ", peer_id)
+	Log.peer(self, "Peer disconnected: " + str(peer_id))
+	if multiplayer.is_server():
+		assert(peer_id != 1, "This is a server, but the remote peer_id is 1.")
+		Log.peer(self, "Deinitializing tracker for: " + str(peer_id))
+		mp_tracker.mark_disconnected.rpc(peer_id)
+
+func _on_single_player_tracker_spawned(spawned_tracker: SinglePlayerTracker) -> void:
+	# If we spawned ourselves, set our own identity
+	if spawned_tracker.get_multiplayer_authority() == multiplayer.multiplayer_peer.get_unique_id():
+		spawned_tracker.update_identity.rpc(local_player_name, local_player_color)
+	# If another player spawned, and they connected before us, send them our identity
+	else:
+		var self_tracker = mp_tracker.find(multiplayer.multiplayer_peer.get_unique_id())
+		if self_tracker != null:
+			self_tracker.notify_identity(spawned_tracker.get_multiplayer_authority())
