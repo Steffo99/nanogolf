@@ -38,6 +38,18 @@ layout_mode = 2
 custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 
-[node name="Button" type="Button" parent="Layout"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Layout"]
 layout_mode = 2
-text = "Avvia partita"
+
+[node name="LeaveButton" type="Button" parent="Layout/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Esci"
+
+[node name="StartButton" type="Button" parent="Layout/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Avvia"
+
+[connection signal="pressed" from="Layout/HBoxContainer/LeaveButton" to="." method="_on_leave_button_pressed"]
+[connection signal="pressed" from="Layout/HBoxContainer/StartButton" to="." method="_on_start_button_pressed"]

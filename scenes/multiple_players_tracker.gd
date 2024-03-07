@@ -1,38 +1,68 @@
-extends MultiplayerSpawner
+extends Node
 class_name MultiplePlayersTracker
 
-# Requires the peer_id as data for the spawn function.
+## Manager of all the instances of [SinglePlayerTracker] for a given multiplayer room.
+## 
+## Authority of this object is always given to the server (1).
+##
+## The server uses its authority to assign authority to the child [SinglePlayerTracker]s.
 
-signal trackers_changed(trackers: Dictionary)
+## Emitted when a new [SinglePlayerTracker] is created.
+signal created(tracker: SinglePlayerTracker)
 
-func emit_trackers_changed():
-	trackers_changed.emit(trackers_by_peer_id)
+## Emitted when any [SinglePlayerTracker] has changed.
+signal changed(all_trackers: Array[SinglePlayerTracker])
 
+## Emitted when any [SinglePlayerTracker] is about to be destroyed.
+signal before_destroyed(tracker: SinglePlayerTracker)
 
-var trackers_by_peer_id: Dictionary = {}
+## The scene to be instantiated.
+const tracker_scene = preload("res://scenes/single_player_tracker.tscn")
 
+## Return the [Array] of [SinglePlayerTrackers] managed by this object.
+func find_all() -> Array[SinglePlayerTracker]:
+	return find_children("", "SinglePlayerTracker", false, false) as Array[SinglePlayerTracker]
 
-func find(peer_id: int) -> SinglePlayerTracker:
-	return trackers_by_peer_id.get(peer_id)
+## Find the first [SinglePlayerTracker] over which the given peer id has authority.
+func find_id(peer_id: int) -> SinglePlayerTracker:
+	for tracker in find_all():
+		if tracker.get_multiplayer_authority() == peer_id:
+			return tracker
+	return null
 
+## Find the first [SinglePlayerTracker] over which the running instance has authority.
+func find_self() -> SinglePlayerTracker:
+	var self_id = multiplayer.multiplayer_peer.get_unique_id()
+	return find_id(self_id)
+
+## Find the first [SinglePlayerTracker] representing a player with the given name.
+func find_name(player_name: String) -> SinglePlayerTracker:
+	for tracker in find_all():
+		if tracker.player_name == player_name:
+			return tracker
+	return null
+
+## Create a new [SinglePlayerTracker] for the given peer id, or return the one that already exists.
 @rpc("authority", "call_local", "reliable")
-func mark_disconnected(peer_id: int):
-	var single_tracker_instance = find(peer_id)
-	single_tracker_instance.set_multiplayer_authority(1)
-	single_tracker_instance.peer_connected = false
-	emit_trackers_changed()
+func create(peer_id: int) -> SinglePlayerTracker:
+	var tracker = find_id(peer_id)
+	if tracker != null:
+		return tracker
+	Log.peer(self, "Creating tracker for peer: %d" % peer_id)
+	tracker = tracker_scene.instantiate()
+	tracker.set_multiplayer_authority(peer_id)
+	created.emit(tracker)
+	var trackers = find_all()
+	changed.emit(trackers)
+	return tracker
 
-func _ready():
-	spawn_function = _spawn_tracker
-
-func _spawn_tracker(peer_id: int) -> Node:
-	var single_tracker_scene: PackedScene = load(get_spawnable_scene(0))
-	var single_tracker_instance: SinglePlayerTracker = single_tracker_scene.instantiate()
-	single_tracker_instance.set_multiplayer_authority(peer_id)
-	single_tracker_instance.identity_updated.connect(_on_tracker_identity_updated)
-	trackers_by_peer_id[peer_id] = single_tracker_instance
-	emit_trackers_changed()
-	return single_tracker_instance
-
-func _on_tracker_identity_updated(_player_name: String, _player_color: Color):
-	emit_trackers_changed()
+## Destroy the [SinglePlayerTracker] for the given peer id, or do nothing if it already exists.
+func destroy(peer_id: int) -> void:
+	var tracker = find_id(peer_id)
+	if tracker == null:
+		return
+	Log.peer(self, "Destroying tracker for peer: %d" % peer_id)
+	before_destroyed.emit(tracker)
+	tracker.queue_free()
+	var trackers = find_all()
+	changed.emit(trackers)

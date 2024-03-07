@@ -1,6 +1,25 @@
-[gd_scene load_steps=2 format=3 uid="uid://drccgvtcng3ju"]
+[gd_scene load_steps=3 format=3 uid="uid://drccgvtcng3ju"]
 
 [ext_resource type="Script" path="res://scenes/single_player_tracker.gd" id="1_jwlkv"]
 
-[node name="SinglePlayerTracker" type="Node"]
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_755wr"]
+properties/0/path = NodePath(".:player_connected")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+properties/1/path = NodePath(".:player_name")
+properties/1/spawn = true
+properties/1/replication_mode = 2
+properties/2/path = NodePath(".:player_color")
+properties/2/spawn = true
+properties/2/replication_mode = 2
+properties/3/path = NodePath(".:strokes_per_hole")
+properties/3/spawn = true
+properties/3/replication_mode = 2
+
+[node name="SinglePlayerTracker" type="MultiplayerSynchronizer"]
+root_path = NodePath(".")
+replication_interval = 1.0
+delta_interval = 0.125
+replication_config = SubResource("SceneReplicationConfig_755wr")
+visibility_update_mode = 2
 script = ExtResource("1_jwlkv")

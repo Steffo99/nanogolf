@@ -10,5 +10,5 @@ signal name_confirmed(selected_name: String)
 func _on_button_pressed():
 	name_confirmed.emit(line_edit.text)
 
-func _on_line_edit_text_submitted(new_text: String):
+func _on_line_edit_text_submitted(_new_text: String):
 	name_confirmed.emit(line_edit.text)

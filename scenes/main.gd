@@ -42,9 +42,7 @@ func init_server_game(server_port: int):
 	smp.set_multiplayer_peer(peer)
 
 func deinit_server_game():
-	var smp: SceneMultiplayer = scene_tree.get_multiplayer(^"/root/Main/Server")
-	smp.multiplayer_peer.close()
-	smp.multiplayer_peer = null
+	server_game_instance.multiplayer.multiplayer_peer = null
 	scene_tree.set_multiplayer(multiplayer, ^"/root/Main/Server")
 	server_game_instance.queue_free()
 
@@ -67,14 +65,14 @@ func init_client_game(player_name: String, player_color: Color, server_address: 
 	smp.set_multiplayer_peer(peer)
 
 func deinit_client_game():
-	var smp: SceneMultiplayer = scene_tree.get_multiplayer(^"/root/Main/Server")
-	smp.multiplayer_peer.close()
-	smp.multiplayer_peer = null
+	client_game_instance.multiplayer.multiplayer_peer = null
 	scene_tree.set_multiplayer(multiplayer, ^"/root/Main/Client")
 	client_game_instance.queue_free()
 
 func init_lobby_menu():
 	lobby_menu_instance = lobby_menu_scene.instantiate()
+	lobby_menu_instance.leave_confirmed.connect(_on_leave_confirmed)
+	lobby_menu_instance.start_confirmed.connect(_on_start_confirmed)
 	interface_instance.add_child(lobby_menu_instance)
 
 func deinit_lobby_menu():
@@ -95,3 +93,13 @@ func _on_connecting_confirmed(player_name: String, player_color: Color, server_a
 	init_client_game(player_name, player_color, server_address, server_port)
 	init_lobby_menu()
 	client_game_instance.trackers_changed.connect(lobby_menu_instance._on_trackers_changed)
+
+func _on_leave_confirmed():
+	deinit_lobby_menu()
+	deinit_client_game()
+	if server_game_instance != null:
+		deinit_server_game()
+	init_main_menu()
+
+func _on_start_confirmed():
+	pass
