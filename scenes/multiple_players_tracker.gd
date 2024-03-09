@@ -42,6 +42,7 @@ func find_name(player_name: String) -> SinglePlayerTracker:
 			return tracker
 	return null
 
+
 ## Create a new [SinglePlayerTracker] for the given peer id, or return the one that already exists.
 @rpc("authority", "call_local", "reliable")
 func create(peer_id: int) -> SinglePlayerTracker:
