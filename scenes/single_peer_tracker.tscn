@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://gabtrafmbrmn"]
-
-[ext_resource type="Script" path="res://scenes/single_peer_tracker.gd" id="1_pofmw"]
-
-[node name="SinglePeerTracker" type="Node"]
-script = ExtResource("1_pofmw")
