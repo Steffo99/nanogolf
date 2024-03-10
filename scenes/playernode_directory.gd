@@ -16,12 +16,6 @@ var playernodes_by_name: Dictionary = {}
 func get_playernode(player_name: String) -> PlayerNode:
 	return playernodes_by_name.get(player_name)
 
-## Called everywhere when a [PlayerNode] is renamed.
-func _on_playernode_renamed(old_name: String, new_name: String) -> void:
-	var playernode = playernodes_by_name.get(old_name)
-	playernodes_by_name.erase(old_name)
-	playernodes_by_name[new_name] = playernode
-
 
 ## Create a new [PlayerNode] for the given [param player_name], giving control of it to [param peer_id].
 ##
@@ -34,11 +28,32 @@ func rpc_possess_playernode(player_name: String, peer_id: int):
 	# If the playernode does not exist, create it
 	if playernode == null:
 		playernode = playernode_scene.instantiate()
-		add_child(playernode)
+		playernode.name_changed.connect(_on_playernode_name_changed.bind(playernode))
+		playernode.color_changed.connect(_on_playernode_color_changed.bind(playernode))
+		playernode.possessed.connect(_on_playernode_possessed.bind(playernode))
+		add_child(playernode, true)
 	# If the multiplayer authority does not match the requested one, make it match
-	if playernode.get_multiplayer_authority() != peer_id:
-		playernode.set_multiplayer_authority(peer_id)
-		child_repossessed.emit(playernode)
+	playernode.possess(peer_id)
+
+
+
+func _on_playernode_name_changed(old: String, new: String, playernode: PlayerNode):
+	playernodes_by_name.erase(old)
+	playernodes_by_name[new] = playernode
+	playernode_name_changed.emit(old, new, playernode)
+
+func _on_playernode_color_changed(old: Color, new: Color, playernode: PlayerNode):
+	playernode_color_changed.emit(old, new, playernode)
+
+func _on_playernode_possessed(old: int, new: int, playernode: PlayerNode):
+	playernode_possessed.emit(old, new, playernode)
+
+
+## Emitted when the name of one of the children [PlayerNode]s changes on the local scene.
+signal playernode_name_changed(old: String, new: String, playernode: PlayerNode)
+
+## Emitted when the name of one of the children [PlayerNode]s changes on the local scene.
+signal playernode_color_changed(old: Color, new: Color, playernode: PlayerNode)
 
 ## Emitted everywhere when one of the children [PlayerNode]s has changed multiplayer authority.
-signal child_repossessed(playernode: PlayerNode)
+signal playernode_possessed(old: int, new: int, playernode: PlayerNode)

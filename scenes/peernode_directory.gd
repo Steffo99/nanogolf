@@ -29,7 +29,7 @@ func rpc_create_peernode(peer_id: int):
 	peernodes_by_id[peer_id] = peernode
 	peernode.set_multiplayer_authority(peer_id)
 	peernode.identified.connect(_on_peernode_identified.bind(peernode))
-	add_child(peernode)
+	add_child(peernode, true)
 
 
 ## Destroy the [PeerNode] for the given peer_id, or do nothing if it does not exist.
@@ -44,8 +44,8 @@ func rpc_destroy_peernode(peer_id: int):
 
 
 ## Called on the server when a [PeerNode] calls [method rpc_identify] for itself.
-func _on_peernode_identified(peernode: PeerNode, player_name: String):
-	peernode_identified.emit(peernode, player_name)
+func _on_peernode_identified(player_name: String, peernode: PeerNode):
+	peernode_identified.emit(player_name, peernode)
 
 ## Emitted on the server when a [PeerNode] calls [method rpc_identify] for itself.
-signal peernode_identified(peernode: PeerNode, player_name: String)
+signal peernode_identified(player_name: String, peernode: PeerNode)

@@ -2,7 +2,14 @@ extends Label
 class_name PlayerLabel
 
 
-func update_from_tracker(tracker: SinglePlayerTracker):
-	text = tracker.player_name
-	add_theme_color_override("font_color", tracker.player_color)
-	modulate.a = 1.0 if tracker.get_multiplayer_authority() != 1 else 0.3
+func set_player_name(value: String):
+	text = value
+
+func set_player_color(value: Color):
+	add_theme_color_override("font_color", value)
+
+func set_possessed(value: int):
+	if value == 1:
+		modulate.a = 0.3
+	else:
+		modulate.a = 1.0

@@ -61,7 +61,8 @@ func init_client_game(player_name: String, player_color: Color, server_address: 
 	
 	scene_tree.set_multiplayer(smp, ^"/root/Main/Client")
 	client_game_instance.init_signals()
-	client_game_instance.init_identity(player_name, player_color)
+	client_game_instance.local_player_name = player_name
+	client_game_instance.local_player_color = player_color
 	smp.set_multiplayer_peer(peer)
 
 func deinit_client_game():
@@ -74,8 +75,18 @@ func init_lobby_menu():
 	lobby_menu_instance.leave_confirmed.connect(_on_leave_confirmed)
 	lobby_menu_instance.start_confirmed.connect(_on_start_confirmed)
 	interface_instance.add_child(lobby_menu_instance)
+	client_game_instance.player_dir.child_entered_tree.connect(lobby_menu_instance.players_list._on_playernode_created)
+	client_game_instance.player_dir.child_exiting_tree.connect(lobby_menu_instance.players_list._on_playernode_destroyed)
+	client_game_instance.player_dir.playernode_name_changed.connect(lobby_menu_instance.players_list._on_playernode_name_changed)
+	client_game_instance.player_dir.playernode_color_changed.connect(lobby_menu_instance.players_list._on_playernode_color_changed)
+	client_game_instance.player_dir.playernode_possessed.connect(lobby_menu_instance.players_list._on_playernode_possessed)
 
 func deinit_lobby_menu():
+	client_game_instance.player_dir.child_entered_tree.disconnect(lobby_menu_instance.players_list._on_playernode_created)
+	client_game_instance.player_dir.child_exiting_tree.disconnect(lobby_menu_instance.players_list._on_playernode_destroyed)
+	client_game_instance.player_dir.playernode_name_changed.disconnect(lobby_menu_instance.players_list._on_playernode_name_changed)
+	client_game_instance.player_dir.playernode_color_changed.disconnect(lobby_menu_instance.players_list._on_playernode_color_changed)
+	client_game_instance.player_dir.playernode_possessed.disconnect(lobby_menu_instance.players_list._on_playernode_possessed)
 	lobby_menu_instance.queue_free()
 
 func _ready():
@@ -86,13 +97,11 @@ func _on_hosting_confirmed(player_name: String, player_color: Color, server_port
 	init_server_game(server_port)
 	init_client_game(player_name, player_color, "127.0.0.1", server_port)
 	init_lobby_menu()
-	client_game_instance.trackers_changed.connect(lobby_menu_instance._on_trackers_changed)
 
 func _on_connecting_confirmed(player_name: String, player_color: Color, server_address: String, server_port: int):
 	deinit_main_menu()
 	init_client_game(player_name, player_color, server_address, server_port)
 	init_lobby_menu()
-	client_game_instance.trackers_changed.connect(lobby_menu_instance._on_trackers_changed)
 
 func _on_leave_confirmed():
 	deinit_lobby_menu()

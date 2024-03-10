@@ -1,12 +1,19 @@
-[gd_scene load_steps=3 format=3 uid="uid://b4w6ungwwjxsg"]
+[gd_scene load_steps=4 format=3 uid="uid://dyxwp5rnxiff7"]
 
 [ext_resource type="Script" path="res://scenes/game.gd" id="1_cdtng"]
-[ext_resource type="PackedScene" uid="uid://cwj0fyj6obj6r" path="res://scenes/multiple_players_tracker.tscn" id="2_f2gy2"]
+[ext_resource type="PackedScene" uid="uid://7ux0cl08c2ho" path="res://scenes/peernode_directory.tscn" id="1_p0gju"]
+[ext_resource type="PackedScene" uid="uid://d3jo4swi2c7ae" path="res://scenes/playernode_directory.tscn" id="2_pvlqw"]
 
 [node name="Game" type="Node"]
 script = ExtResource("1_cdtng")
 
-[node name="MultiplePlayersTracker" parent="." instance=ExtResource("2_f2gy2")]
+[node name="PeerNodeDirectory" parent="." instance=ExtResource("1_p0gju")]
 
-[connection signal="created" from="MultiplePlayersTracker" to="." method="_on_single_player_tracker_created"]
-[connection signal="trackers_changed" from="MultiplePlayersTracker" to="." method="_on_trackers_changed"]
+[node name="PlayerNodeDirectory" parent="." instance=ExtResource("2_pvlqw")]
+
+[connection signal="child_entered_tree" from="PeerNodeDirectory" to="." method="_on_peerdir_peernode_created"]
+[connection signal="child_exiting_tree" from="PeerNodeDirectory" to="." method="_on_peerdir_peernode_destroyed"]
+[connection signal="peernode_identified" from="PeerNodeDirectory" to="." method="_on_peerdir_peernode_identified"]
+[connection signal="playernode_color_changed" from="PlayerNodeDirectory" to="." method="_on_playerdir_playernode_color_changed"]
+[connection signal="playernode_name_changed" from="PlayerNodeDirectory" to="." method="_on_playerdir_playernode_name_changed"]
+[connection signal="playernode_possessed" from="PlayerNodeDirectory" to="." method="_on_playerdir_playernode_possessed"]
