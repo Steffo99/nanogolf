@@ -36,12 +36,19 @@ func _on_multiplayer_peer_connected(peer_id: int) -> void:
 	if multiplayer.is_server():
 		for peernode in peer_dir.get_children():
 			peer_dir.rpc_create_peernode.rpc_id(peer_id, peernode.get_multiplayer_authority())
+		for playernode in player_dir.get_children():
+			player_dir.rpc_possess_playernode.rpc_id(peer_id, playernode.player_name, playernode.get_multiplayer_authority())
+			playernode.rpc_query_name.rpc_id(playernode.get_multiplayer_authority())
+			playernode.rpc_query_color.rpc_id(playernode.get_multiplayer_authority())
 		peer_dir.rpc_create_peernode.rpc(peer_id)
 
 func _on_multiplayer_peer_disconnected(peer_id: int) -> void:
 	Log.peer(self, "Peer disconnected: %d" % peer_id)
 	if multiplayer.is_server():
-		peer_dir.rpc_destroy_peernode(peer_id)
+		for playernode in player_dir.get_children():
+			if playernode.get_multiplayer_authority() == peer_id:
+				player_dir.rpc_possess_playernode.rpc(playernode.player_name, 1)
+		peer_dir.rpc_destroy_peernode.rpc(peer_id)
 
 
 func _on_peerdir_peernode_created(peernode: PeerNode) -> void:
@@ -51,9 +58,6 @@ func _on_peerdir_peernode_created(peernode: PeerNode) -> void:
 
 func _on_peerdir_peernode_destroyed(peernode: PeerNode) -> void:
 	Log.peer(self, "Peernode destroyed: %d" % peernode.get_multiplayer_authority())
-	for playernode in player_dir.get_children():
-		if playernode.get_multiplayer_authority() == peernode.get_multiplayer_authority():
-			playernode.possess(1)
 
 func _on_peerdir_peernode_identified(player_name: String, peernode: PeerNode) -> void:
 	Log.peer(self, "Peernode identified: %d → %s" % [peernode.get_multiplayer_authority(), player_name])
@@ -61,20 +65,19 @@ func _on_peerdir_peernode_identified(player_name: String, peernode: PeerNode) ->
 
 
 func _on_playerdir_playernode_created(playernode: PlayerNode) -> void:
-	Log.peer(self, "Playernode `%s` created" % playernode.name)
+	Log.peer(self, "Playernode `%s` created" % playernode.player_name)
 
 func _on_playerdir_playernode_destroyed(playernode: PlayerNode) -> void:
-	Log.peer(self, "Playernode `%s` destroyed" % playernode.name)
-	# Technically, this shouldn't ever happen
+	Log.peer(self, "Playernode `%s` destroyed" % playernode.player_name)
 
 func _on_playerdir_playernode_name_changed(old: String, new: String, playernode: PlayerNode) -> void:
-	Log.peer(self, "Playernode `%s` changed name: %s (was %s)" % [playernode.name, new, old])
+	Log.peer(self, "Playernode `%s` changed name: %s (was %s)" % [playernode.player_name, new, old])
 
-func _on_playerdir_playernode_color_changed(old: Color, new: String, playernode: PlayerNode) -> void:
-	Log.peer(self, "Playernode `%s` changed color: %s (was %s)" % [playernode.name, new, old])
+func _on_playerdir_playernode_color_changed(old: Color, new: Color, playernode: PlayerNode) -> void:
+	Log.peer(self, "Playernode `%s` changed color: %s (was %s)" % [playernode.player_name, new, old])
 
 func _on_playerdir_playernode_possessed(old: int, new: int, playernode: PlayerNode) -> void:
-	Log.peer(self, "Playernode `%s` possessed: %d (was %d)" % [playernode.name, new, old])
-	if playernode.is_multiplayer_authority():
+	Log.peer(self, "Playernode `%s` possessed: %d (was %d)" % [playernode.player_name, new, old])
+	if playernode.is_multiplayer_authority() and not multiplayer.is_server():
 		playernode.rpc_set_name.rpc(local_player_name)
 		playernode.rpc_set_color.rpc(local_player_color)

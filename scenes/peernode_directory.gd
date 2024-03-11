@@ -6,15 +6,9 @@ class_name PeerNodeDirectory
 @export var peernode_scene: PackedScene = preload("res://scenes/peernode.tscn")
 
 
-## Cache dictionary mapping peer_ids to their respective [PeerNode].
-##
-## This script is responsible for keeping it updated.
-var peernodes_by_id: Dictionary = {}
-
-
 ## Find the subordinate [PeerNode] with the given peer_id, and return it if found, otherwise return null.
 func get_peernode(peer_id: int) -> PeerNode:
-	return peernodes_by_id.get(peer_id) as PeerNode
+	return get_node_or_null("%d" % peer_id)
 
 
 ## Create a new [PeerNode] for the given peer_id, or do nothing if it already exists.
@@ -26,10 +20,10 @@ func rpc_create_peernode(peer_id: int):
 		return
 	# Create a new peernode
 	peernode = peernode_scene.instantiate()
-	peernodes_by_id[peer_id] = peernode
 	peernode.set_multiplayer_authority(peer_id)
 	peernode.identified.connect(_on_peernode_identified.bind(peernode))
-	add_child(peernode, true)
+	peernode.name = "%d" % peer_id
+	add_child(peernode)
 
 
 ## Destroy the [PeerNode] for the given peer_id, or do nothing if it does not exist.

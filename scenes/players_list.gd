@@ -11,6 +11,9 @@ var labels_by_playernode: Dictionary = {}
 
 func _on_playernode_created(playernode: PlayerNode) -> void:
 	var label_instance = label_scene.instantiate()
+	label_instance.set_player_name(playernode.player_name)
+	label_instance.set_player_color(playernode.player_color)
+	label_instance.set_possessed(playernode.get_multiplayer_authority())
 	labels_by_playernode[playernode] = label_instance
 	layout.add_child(label_instance)
 

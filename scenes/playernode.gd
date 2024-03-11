@@ -2,6 +2,11 @@ extends Node
 class_name PlayerNode
 
 
+## Remove problematic characters from the player's name
+static func sanitize_player_name(s: String) -> String:
+	return s.replace("/", "_").replace("*", "_").replace(" ", "_")
+
+
 ## The name of the player represented by this node.
 var player_name: String
 
@@ -13,7 +18,8 @@ var player_color: Color
 func rpc_set_name(value: String):
 	if player_name != value:
 		var old_value: String = player_name
-		player_name = value
+		player_name = PlayerNode.sanitize_player_name(value)
+		name = PlayerNode.sanitize_player_name(value)
 		name_changed.emit(old_value, value)
 
 ## Change the [field player_color] everywhere.

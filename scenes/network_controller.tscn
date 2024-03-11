@@ -1,6 +1,24 @@
-[gd_scene load_steps=2 format=3 uid="uid://ddmiruki5mjn2"]
+[gd_scene load_steps=2 format=3 uid="uid://d25h11x5grlnn"]
 
-[ext_resource type="Script" path="res://scenes/network_controller.gd" id="1_2jxjv"]
+[sub_resource type="GDScript" id="GDScript_nrktq"]
+script/source = "extends Node
+class_name NetworkController
+
+
+@export var port = 12345
+
+
+func start_server() -> ENetMultiplayerPeer:
+	var peer = ENetMultiplayerPeer.new()
+	peer.create_server(port, 32)
+	return peer
+
+
+func start_client() -> ENetMultiplayerPeer:
+	var peer = ENetMultiplayerPeer.new()
+	peer.create_client(\"127.0.0.1\", port)
+	return peer
+"
 
 [node name="NetworkController" type="Node"]
-script = ExtResource("1_2jxjv")
+script = SubResource("GDScript_nrktq")

@@ -74,14 +74,17 @@ func init_lobby_menu():
 	lobby_menu_instance = lobby_menu_scene.instantiate()
 	lobby_menu_instance.leave_confirmed.connect(_on_leave_confirmed)
 	lobby_menu_instance.start_confirmed.connect(_on_start_confirmed)
-	interface_instance.add_child(lobby_menu_instance)
+	lobby_menu_instance.init_refs()
+	client_game_instance.multiplayer.server_disconnected.connect(_on_leave_confirmed)
 	client_game_instance.player_dir.child_entered_tree.connect(lobby_menu_instance.players_list._on_playernode_created)
 	client_game_instance.player_dir.child_exiting_tree.connect(lobby_menu_instance.players_list._on_playernode_destroyed)
 	client_game_instance.player_dir.playernode_name_changed.connect(lobby_menu_instance.players_list._on_playernode_name_changed)
 	client_game_instance.player_dir.playernode_color_changed.connect(lobby_menu_instance.players_list._on_playernode_color_changed)
 	client_game_instance.player_dir.playernode_possessed.connect(lobby_menu_instance.players_list._on_playernode_possessed)
+	interface_instance.add_child(lobby_menu_instance)
 
 func deinit_lobby_menu():
+	client_game_instance.multiplayer.server_disconnected.disconnect(_on_leave_confirmed)
 	client_game_instance.player_dir.child_entered_tree.disconnect(lobby_menu_instance.players_list._on_playernode_created)
 	client_game_instance.player_dir.child_exiting_tree.disconnect(lobby_menu_instance.players_list._on_playernode_destroyed)
 	client_game_instance.player_dir.playernode_name_changed.disconnect(lobby_menu_instance.players_list._on_playernode_name_changed)
