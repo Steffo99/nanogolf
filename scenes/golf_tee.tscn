@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://c5vbxqhevocy7"]
+
+[ext_resource type="Script" path="res://scenes/golf_tee.gd" id="1_wboy6"]
+
+[node name="GolfTee" type="Node2D"]
+script = ExtResource("1_wboy6")
