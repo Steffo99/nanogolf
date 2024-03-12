@@ -46,7 +46,7 @@ func _on_multiplayer_peer_connected(peer_id: int) -> void:
 			playernode.rpc_query_name.rpc_id(playernode.get_multiplayer_authority())
 			playernode.rpc_query_color.rpc_id(playernode.get_multiplayer_authority())
 		peer_dir.rpc_create_peernode.rpc(peer_id)
-		rpc_set_phase.rpc_id(peer_id, phase)
+		phase_tracker.rpc_set_phase.rpc_id(peer_id, phase_tracker.phase)
 
 func _on_multiplayer_peer_disconnected(peer_id: int) -> void:
 	Log.peer(self, "Peer disconnected: %d" % peer_id)
@@ -91,4 +91,4 @@ func _on_playerdir_playernode_possessed(old: int, new: int, playernode: PlayerNo
 
 func _on_main_start_confirmed() -> void:
 	if multiplayer.is_server():
-		rpc_set_phase.rpc(Phase.PLAYING)
+		phase_tracker.rpc_set_phase.rpc(PhaseTracker.Phase.PLAYING)
