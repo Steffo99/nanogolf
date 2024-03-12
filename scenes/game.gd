@@ -7,13 +7,18 @@ var local_player_name: String
 ## The color to be given to the player controlled by the local peer.
 var local_player_color: Color
 
+
 ## The [PeerNodeDirectory] instance child of this node.
 @onready var peer_dir: PeerNodeDirectory = $"PeerNodeDirectory"
 
 ## The [PlayerNodeDirectory] instance child of this node.
 @onready var player_dir: PlayerNodeDirectory = $"PlayerNodeDirectory"
 
+## The [PhaseTracker] instance child of this node.
+@onready var phase_tracker: PhaseTracker = $"PhaseTracker"
 
+
+## Initialize some signals needed by this node to function properly.
 func init_signals() -> void:
 	multiplayer.connected_to_server.connect(_on_multiplayer_connected_to_server)
 	multiplayer.server_disconnected.connect(_on_multiplayer_disconnected_from_server)
@@ -41,6 +46,7 @@ func _on_multiplayer_peer_connected(peer_id: int) -> void:
 			playernode.rpc_query_name.rpc_id(playernode.get_multiplayer_authority())
 			playernode.rpc_query_color.rpc_id(playernode.get_multiplayer_authority())
 		peer_dir.rpc_create_peernode.rpc(peer_id)
+		rpc_set_phase.rpc_id(peer_id, phase)
 
 func _on_multiplayer_peer_disconnected(peer_id: int) -> void:
 	Log.peer(self, "Peer disconnected: %d" % peer_id)
@@ -81,3 +87,8 @@ func _on_playerdir_playernode_possessed(old: int, new: int, playernode: PlayerNo
 	if playernode.is_multiplayer_authority() and not multiplayer.is_server():
 		playernode.rpc_set_name.rpc(local_player_name)
 		playernode.rpc_set_color.rpc(local_player_color)
+
+
+func _on_main_start_confirmed() -> void:
+	if multiplayer.is_server():
+		rpc_set_phase.rpc(Phase.PLAYING)

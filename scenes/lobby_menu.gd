@@ -7,9 +7,11 @@ signal start_confirmed
 
 
 var players_list: Container
+var start_button: Button
 
 func init_refs():
 	players_list = $"Layout/PlayersList"
+	start_button = $"Layout/HBoxContainer/StartButton"
 
 
 func _on_leave_button_pressed() -> void:
