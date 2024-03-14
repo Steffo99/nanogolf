@@ -2,9 +2,9 @@ extends Camera2D
 class_name FollowCamera
 
 
-@export var target: Node2D
+@export var target: Node2D = null
 
 
 func _physics_process(_delta):
-	if target:
+	if target != null:
 		position = target.position

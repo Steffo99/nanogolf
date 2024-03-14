@@ -3,6 +3,7 @@
 [ext_resource type="TileSet" uid="uid://17esn8g8xqik" path="res://tiles/hole_tile_set.tres" id="1_uf2u7"]
 
 [node name="TileMap" type="TileMap"]
+scale = Vector2(0.125, 0.125)
 tile_set = ExtResource("1_uf2u7")
 format = 2
 layer_0/name = "Walls"

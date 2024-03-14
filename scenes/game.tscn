@@ -1,18 +1,35 @@
-[gd_scene load_steps=5 format=3 uid="uid://dyxwp5rnxiff7"]
+[gd_scene load_steps=10 format=3 uid="uid://dyxwp5rnxiff7"]
 
 [ext_resource type="Script" path="res://scenes/game.gd" id="1_cdtng"]
 [ext_resource type="PackedScene" uid="uid://7ux0cl08c2ho" path="res://scenes/peernode_directory.tscn" id="1_p0gju"]
 [ext_resource type="PackedScene" uid="uid://d3jo4swi2c7ae" path="res://scenes/playernode_directory.tscn" id="2_pvlqw"]
 [ext_resource type="PackedScene" uid="uid://dc8pe5dnk8kbv" path="res://scenes/phase_tracker.tscn" id="4_kab4c"]
+[ext_resource type="PackedScene" uid="uid://dnryhtnk21ep1" path="res://scenes/level_manager.tscn" id="5_tdqk1"]
+[ext_resource type="PackedScene" uid="uid://g03qgetpy6b5" path="res://scenes/level_playlist.tscn" id="6_bk2n3"]
+[ext_resource type="Script" path="res://scenes/level_playlist.gd" id="7_akb5s"]
+[ext_resource type="PackedScene" uid="uid://coh35s53wjxoa" path="res://scenes/golf_level_1.tscn" id="8_h8dsk"]
+[ext_resource type="PackedScene" uid="uid://dts4o84p3vj5c" path="res://scenes/golf_level_2.tscn" id="9_2kliu"]
 
-[node name="Game" type="Node"]
+[node name="Game" type="Node" node_paths=PackedStringArray("peer_dir", "player_dir", "phase_tracker", "level_manager")]
 script = ExtResource("1_cdtng")
+peer_dir = NodePath("PeerNodeDirectory")
+player_dir = NodePath("PlayerNodeDirectory")
+phase_tracker = NodePath("PhaseTracker")
+level_manager = NodePath("LevelManager")
 
 [node name="PeerNodeDirectory" parent="." instance=ExtResource("1_p0gju")]
 
 [node name="PlayerNodeDirectory" parent="." instance=ExtResource("2_pvlqw")]
 
 [node name="PhaseTracker" parent="." instance=ExtResource("4_kab4c")]
+
+[node name="LevelManager" parent="." node_paths=PackedStringArray("playlist", "player_dir") instance=ExtResource("5_tdqk1")]
+playlist = NodePath("LevelPlaylist")
+player_dir = NodePath("../PlayerNodeDirectory")
+
+[node name="LevelPlaylist" parent="LevelManager" instance=ExtResource("6_bk2n3")]
+script = ExtResource("7_akb5s")
+levels = Array[PackedScene]([ExtResource("8_h8dsk"), ExtResource("9_2kliu")])
 
 [connection signal="child_entered_tree" from="PeerNodeDirectory" to="." method="_on_peerdir_peernode_created"]
 [connection signal="child_exiting_tree" from="PeerNodeDirectory" to="." method="_on_peerdir_peernode_destroyed"]

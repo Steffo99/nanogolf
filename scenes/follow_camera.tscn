@@ -1,5 +1,6 @@
-[gd_scene format=3 uid="uid://c5ck3dhekpwb8"]
+[gd_scene load_steps=2 format=3 uid="uid://c5ck3dhekpwb8"]
+
+[ext_resource type="Script" path="res://scenes/follow_camera.gd" id="1_kvu2h"]
 
 [node name="FollowCamera" type="Camera2D"]
-editor_draw_limits = true
-editor_draw_drag_margin = true
+script = ExtResource("1_kvu2h")

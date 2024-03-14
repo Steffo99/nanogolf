@@ -1,22 +1,25 @@
-[gd_scene load_steps=4 format=3 uid="uid://coh35s53wjxoa"]
+[gd_scene load_steps=6 format=3 uid="uid://coh35s53wjxoa"]
 
-[ext_resource type="TileSet" uid="uid://17esn8g8xqik" path="res://tiles/hole_tile_set.tres" id="1_r070t"]
-[ext_resource type="PackedScene" uid="uid://ca06elq8io5wu" path="res://scenes/golf_ball.tscn" id="2_ek6nk"]
+[ext_resource type="Script" path="res://scenes/golf_level.gd" id="1_qljh7"]
+[ext_resource type="PackedScene" uid="uid://c5vbxqhevocy7" path="res://scenes/golf_tee.tscn" id="2_arnp6"]
+[ext_resource type="PackedScene" uid="uid://c5ck3dhekpwb8" path="res://scenes/follow_camera.tscn" id="2_xa6so"]
 [ext_resource type="PackedScene" uid="uid://df7t70153a3bb" path="res://scenes/golf_hole.tscn" id="3_mxcvd"]
+[ext_resource type="PackedScene" uid="uid://dck5lkoxskrel" path="res://scenes/golf_tilemap.tscn" id="4_1xa4t"]
 
-[node name="GolfLevel1" type="Node2D"]
+[node name="GolfLevel" type="Node2D" node_paths=PackedStringArray("camera", "tee", "hole", "map")]
+script = ExtResource("1_qljh7")
+camera = NodePath("FollowCamera")
+tee = NodePath("GolfTee")
+hole = NodePath("GolfHole")
+map = NodePath("TileMap")
 
-[node name="Camera" type="Camera2D" parent="."]
+[node name="FollowCamera" parent="." instance=ExtResource("2_xa6so")]
 
-[node name="TileMap" type="TileMap" parent="."]
-scale = Vector2(0.125, 0.125)
-tile_set = ExtResource("1_r070t")
-format = 2
-layer_0/tile_data = PackedInt32Array(131067, 2, 0, 196603, 2, 0, 262139, 2, 0, 327675, 2, 0, 393211, 2, 0, 458747, 2, 0, -196612, 1, 0, -524291, 2, 0, -458755, 2, 0, -393219, 2, 0, -327683, 2, 0, -262147, 1, 0, -589822, 2, 0, -524286, 2, 0, 65540, 2, 0, 131076, 2, 0, 196612, 2, 0, 262148, 2, 0, 327684, 2, 0, 393220, 2, 0, -196613, 1, 805306368, -262148, 1, 805306368, -589827, 2, 0, -589826, 2, 0, 655358, 2, 0, -589825, 2, 0, 655359, 2, 0, -655360, 2, 0, 589824, 2, 0, -655359, 2, 0, 589825, 2, 0, -655358, 2, 0, 524284, 1, 536870912, 458755, 1, 805306368, 589821, 1, 536870912, 524283, 1, 268435456, 589820, 1, 268435456, 655357, 1, 268435456, 589826, 1, 0, 524291, 1, 0, 458756, 1, 0, 524290, 1, 805306368, -196604, 2, 0, -131068, 2, 0, -65532, 2, 0, 4, 2, 0, -262140, 1, 536870912, -327677, 1, 536870912, -327678, 1, 268435456, -393214, 2, 0, -262141, 1, 268435456, -458750, 2, 0, -5, 2, 0, 65531, 2, 0, -131077, 2, 0, -65541, 2, 0, 65535, 1, 805306368, 131071, 1, 268435456, 0, 1, 536870912, 65536, 1, 0)
-metadata/_edit_lock_ = true
-
-[node name="GolfBall" parent="." instance=ExtResource("2_ek6nk")]
+[node name="GolfTee" parent="." instance=ExtResource("2_arnp6")]
 position = Vector2(0, -112)
 
 [node name="GolfHole" parent="." instance=ExtResource("3_mxcvd")]
 position = Vector2(0, 100)
+
+[node name="TileMap" parent="." instance=ExtResource("4_1xa4t")]
+layer_0/tile_data = PackedInt32Array(-458748, 2, 0, -524284, 2, 0, -589820, 2, 0, -655356, 2, 0, -655357, 2, 0, -655358, 2, 0, -655359, 2, 0, -655360, 2, 0, -589825, 2, 0, -589826, 2, 0, -589827, 2, 0, -589828, 2, 0, -589829, 2, 0, -524293, 2, 0, -458757, 2, 0, -393221, 2, 0, -327685, 2, 0, -262149, 2, 0, -393212, 2, 0, -327676, 2, 0, -262140, 2, 0, -196604, 2, 0, -131068, 2, 0, -65532, 2, 0, -196613, 2, 0, -131077, 2, 0, -65541, 2, 0, -5, 2, 0, 65531, 2, 0, 131067, 2, 0, 196603, 2, 0, 262139, 2, 0, 327675, 2, 0, 393211, 2, 0, 458747, 2, 0, 524283, 2, 0, 589819, 2, 0, 589820, 2, 0, 589821, 2, 0, 589822, 2, 0, 589823, 2, 0, 524288, 2, 0, 524289, 2, 0, 524290, 2, 0, 524291, 2, 0, 524292, 2, 0, 4, 2, 0, 65540, 2, 0, 131076, 2, 0, 196612, 2, 0, 262148, 2, 0, 327684, 2, 0, 393220, 2, 0, 458756, 2, 0)

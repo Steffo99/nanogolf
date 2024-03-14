@@ -1,3 +1,6 @@
-[gd_scene format=3 uid="uid://dc8pe5dnk8kbv"]
+[gd_scene load_steps=2 format=3 uid="uid://dc8pe5dnk8kbv"]
+
+[ext_resource type="Script" path="res://scenes/phase_tracker.gd" id="1_k51gn"]
 
 [node name="PhaseTracker" type="Node"]
+script = ExtResource("1_k51gn")

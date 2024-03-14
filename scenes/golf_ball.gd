@@ -34,7 +34,8 @@ var player_name: String = "Player":
 		return player_name
 	set(value):
 		player_name = value
-		player_label.text = value
+		if player_label:
+			player_label.text = value
 		
 ## The color of the player represented by this scene.
 var player_color: Color = Color.WHITE:
@@ -45,12 +46,12 @@ var player_color: Color = Color.WHITE:
 		modulate = value
 
 
-func _on_putt(putt_vector: Vector2):
+func _on_putt(putt_vector: Vector2) -> void:
 	strokes += 1
 	velocity += putt_vector
 
 
-func do_movement(delta: float):
+func do_movement(delta: float) -> void:
 	# How much the body should move in this physics step.
 	var movement = velocity * delta
 	# How many times the body collided in the current physics step.
@@ -87,7 +88,7 @@ func do_movement(delta: float):
 		velocity *= physics_bounce_coefficient
 
 
-func apply_friction(delta):
+func apply_friction(delta) -> void:
 	var new_velocity_length = max(0.0, velocity.length() - physics_friction * delta)
 	velocity = velocity.normalized() * new_velocity_length
 
@@ -100,7 +101,7 @@ func check_has_entered_hole() -> bool:
 	return check_has_stopped() and hole_controller.over_hole
 
 
-func enter_hole():
+func enter_hole() -> void:
 	in_hole = true
 	visible = false
 	hole_sound.play()
@@ -108,7 +109,11 @@ func enter_hole():
 	print("[GolfBall] Entered hole in: ", strokes)
 
 
-func _physics_process(delta):
+func _ready() -> void:
+	player_label.text = player_name
+
+
+func _physics_process(delta) -> void:
 	if not in_hole:
 		do_movement(delta)
 		apply_friction(delta)

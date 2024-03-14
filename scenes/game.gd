@@ -9,13 +9,16 @@ var local_player_color: Color
 
 
 ## The [PeerNodeDirectory] instance child of this node.
-@onready var peer_dir: PeerNodeDirectory = $"PeerNodeDirectory"
+@export var peer_dir: PeerNodeDirectory = null
 
 ## The [PlayerNodeDirectory] instance child of this node.
-@onready var player_dir: PlayerNodeDirectory = $"PlayerNodeDirectory"
+@export var player_dir: PlayerNodeDirectory = null
 
 ## The [PhaseTracker] instance child of this node.
-@onready var phase_tracker: PhaseTracker = $"PhaseTracker"
+@export var phase_tracker: PhaseTracker = null
+
+## The [LevelManager] instance child of this node.
+@export var level_manager: LevelManager = null
 
 
 ## Initialize some signals needed by this node to function properly.
@@ -92,3 +95,4 @@ func _on_playerdir_playernode_possessed(old: int, new: int, playernode: PlayerNo
 func _on_main_start_confirmed() -> void:
 	if multiplayer.is_server():
 		phase_tracker.rpc_set_phase.rpc(PhaseTracker.Phase.PLAYING)
+		level_manager.rpc_next_level.rpc()
