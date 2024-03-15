@@ -1,24 +1,54 @@
 extends Node2D
 class_name PuttController
 
+
+
+@export_category("References")
+
+## The [Sprite2D] used to calculate [field sprite_texture_width] from.
+@export var sprite: Sprite2D
+
+## The [AudioStreamPlayer2D] to play when a putt happens.
+@export var sound: AudioStreamPlayer2D
+
+
+
+@export_category("Physics")
+
 ## The maximum impulse that a putt can have.
 @export var putt_max_impulse: float
+
+
+
+@export_category("Scale")
+
 ## How many game units a pixel of screen mouse movement corresponds to. 
 @export var putt_drag_scale: float
+
 ## Length multiplier of the putt ghost
 @export var putt_ghost_scale: float
+
 ## Curve mapping relative putt impulse to putt sound volume.
 @export var putt_volume: Curve
+
+
+
 ## Emitted when a putt has happened.
 signal putt(putt_vector: Vector2)
 
-@onready var sprite: Sprite2D = $Sprite
-@onready var sound: AudioStreamPlayer2D = $Sound
+
+## The width in pixels that the putt ghost should have.
 @onready var sprite_texture_width: float = sprite.texture.get_width()
 
+## Whether a putt is currently in progress of not.
+##
+## If this is true, then [field drag_start_point] should contain a value.
 var is_putting: bool = false
-var putt_start_point: Vector2
 
+## The position on the screen where the putt has started.
+var drag_start_point: Vector2
+
+## Whether a putt can currently be performed or not.
 var can_putt: bool = false:
 	get:
 		return can_putt
@@ -30,7 +60,7 @@ var can_putt: bool = false:
 
 func _input(event: InputEvent):
 	if can_putt:
-		if event is InputEventMouseButton:
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
 				if not is_putting:
 					start_putt(event.position)
@@ -42,10 +72,10 @@ func _input(event: InputEvent):
 				else:
 					push_warning("Attempted to end putt while none was in progress.")
 			if is_putting:
-				update_putt_ghost(compute_putt(event.position, putt_start_point))
+				update_putt_ghost(compute_putt(event.position, drag_start_point))
 		if event is InputEventMouseMotion:
 			if is_putting:
-				update_putt_ghost(compute_putt(event.position, putt_start_point))
+				update_putt_ghost(compute_putt(event.position, drag_start_point))
 
 
 func update_putt_ghost(putt_vector: Vector2):
@@ -65,14 +95,14 @@ func compute_putt(start_position: Vector2, end_position: Vector2) -> Vector2:
 func start_putt(start_position: Vector2):
 	visible = true
 	is_putting = true
-	putt_start_point = start_position
+	drag_start_point = start_position
 
 
 func end_putt(end_position: Vector2):
 	visible = false
 	is_putting = false
 	can_putt = false
-	var putt_vector = compute_putt(putt_start_point, end_position)
+	var putt_vector = compute_putt(drag_start_point, end_position)
 	putt.emit(putt_vector)
 	play_putt_sound(putt_vector)
 

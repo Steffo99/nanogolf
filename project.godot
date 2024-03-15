@@ -23,6 +23,12 @@ window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 window/handheld/orientation=1
 
+[layer_names]
+
+2d_physics/layer_1="Default"
+2d_physics/layer_2="Players"
+2d_physics/layer_3="Walls"
+
 [physics]
 
 common/physics_ticks_per_second=300

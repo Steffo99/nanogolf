@@ -87,7 +87,16 @@ func init_lobby_menu() -> void:
 	interface_instance.add_child(lobby_menu_instance)
 
 func deinit_lobby_menu() -> void:
-	# TODO: Disconnect all signals above
+	lobby_menu_instance.leave_confirmed.disconnect(_on_leave_confirmed)
+	if server_game_instance:
+		lobby_menu_instance.start_confirmed.disconnect(server_game_instance._on_main_start_confirmed)
+	client_game_instance.multiplayer.server_disconnected.disconnect(_on_leave_confirmed)
+	client_game_instance.player_dir.child_entered_tree.disconnect(lobby_menu_instance.players_list._on_playernode_created)
+	client_game_instance.player_dir.child_exiting_tree.disconnect(lobby_menu_instance.players_list._on_playernode_destroyed)
+	client_game_instance.player_dir.playernode_name_changed.disconnect(lobby_menu_instance.players_list._on_playernode_name_changed)
+	client_game_instance.player_dir.playernode_color_changed.disconnect(lobby_menu_instance.players_list._on_playernode_color_changed)
+	client_game_instance.player_dir.playernode_possessed.disconnect(lobby_menu_instance.players_list._on_playernode_possessed)
+	client_game_instance.phase_tracker.phase_changed.disconnect(_on_phase_changed)
 	lobby_menu_instance.queue_free()
 
 func _ready() -> void:
@@ -105,8 +114,10 @@ func _on_connecting_confirmed(player_name: String, player_color: Color, server_a
 	init_lobby_menu()
 
 func _on_leave_confirmed() -> void:
-	deinit_lobby_menu()
-	deinit_client_game()
+	if lobby_menu_scene:
+		deinit_lobby_menu()
+	if client_game_instance:
+		deinit_client_game()
 	if server_game_instance != null:
 		deinit_server_game()
 	init_main_menu()

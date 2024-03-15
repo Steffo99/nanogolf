@@ -2,30 +2,57 @@ extends CharacterBody2D
 class_name GolfBall
 
 
+
+@export_category("References")
+
+## The [PuttController] that this node should poll.
+@export var putt_controller: PuttController
+
+## The [HoleController] that this node should poll.
+@export var hole_controller: HoleController
+
+## The [AudioStreamPlayer2D] that this node should play when entering the hole.
+@export var hole_sound: AudioStreamPlayer2D
+
+## The [Label] where the name of this player should be displayed.
+@export var player_label: Label
+
+
+
+@export_category("Physics")
+
 ## Dynamic friction subtracted from the body's velocity on each physics step.
 @export var physics_friction: float
+
 ## The maximum number of bounces that the collision algorithm will consider in a single physics step.
 @export var physics_max_bounces: float
+
 ## A multiplier applied to the body's velocity every time it collides with something.
 @export var physics_bounce_coefficient: float
+
 ## The scene to instantiate to play the collision sound
 @export var collision_sound: PackedScene
+
+
+
+@export_category("Sounds")
+
 ## Curve mapping relative putt power to putt sound volume.
 @export var collision_volume_db: Curve
+
 ## The velocity at which the maximum volume of [member collision_volume_db] is played.
 @export var collision_volume_max_velocity: float
+
+
 ## Emitted when the ball enters the hole.
 signal entered_hole(strokes: int)
 
+
 ## How many strokes have been performed so far.
 var strokes: int = 0
+
 ## Whether the ball has entered the hole.
 var in_hole: bool = false
-
-@onready var putt_controller: PuttController = $"PuttController"
-@onready var hole_controller: HoleController = $"HoleController"
-@onready var hole_sound: AudioStreamPlayer2D = $"HoleSound"
-@onready var player_label: Label = $"PlayerLabel"
 
 
 ## The name of the player represented by this scene.
@@ -88,25 +115,36 @@ func do_movement(delta: float) -> void:
 		velocity *= physics_bounce_coefficient
 
 
-func apply_friction(delta) -> void:
+## Reduce [field velocity] by [field physics_friction], taking the [param delta] into account.
+func apply_friction(delta: float) -> void:
 	var new_velocity_length = max(0.0, velocity.length() - physics_friction * delta)
 	velocity = velocity.normalized() * new_velocity_length
 
 
+## Return whether this object can be considered stopped or not.
 func check_has_stopped() -> bool:
 	return velocity.length() == 0.0
 
-
+## Return whether this object will enter the hole on this frame or not.
 func check_has_entered_hole() -> bool:
 	return check_has_stopped() and hole_controller.over_hole
 
 
-func enter_hole() -> void:
+@rpc("authority", "call_local", "reliable")
+func rpc_sync_enter_hole():
 	in_hole = true
 	visible = false
 	hole_sound.play()
 	entered_hole.emit(strokes)
-	print("[GolfBall] Entered hole in: ", strokes)
+	Log.peer(self, "Entered hole in: %d" % strokes)
+	
+
+
+# FIXME: What happens on the server?
+## Push this object's [field global_position] to all other clients.
+@rpc("authority", "call_remote", "unreliable_ordered")
+func rpc_sync_global_position(nposition: Vector2):
+	global_position = nposition
 
 
 func _ready() -> void:
@@ -114,10 +152,12 @@ func _ready() -> void:
 
 
 func _physics_process(delta) -> void:
-	if not in_hole:
-		do_movement(delta)
-		apply_friction(delta)
-		if check_has_entered_hole():
-			enter_hole()
-		if check_has_stopped():
-			putt_controller.can_putt = true
+	if is_multiplayer_authority():
+		if not in_hole:
+			do_movement(delta)
+			rpc_sync_global_position.rpc(global_position)
+			apply_friction(delta)
+			if check_has_entered_hole():
+				rpc_sync_enter_hole.rpc()
+			if check_has_stopped():
+				putt_controller.can_putt = true

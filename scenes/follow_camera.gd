@@ -7,4 +7,4 @@ class_name FollowCamera
 
 func _physics_process(_delta):
 	if target != null:
-		position = target.position
+		position = target.global_position

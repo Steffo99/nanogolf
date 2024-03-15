@@ -8,6 +8,7 @@
 
 [node name="GolfLevel" type="Node2D" node_paths=PackedStringArray("camera", "tee", "hole", "map")]
 script = ExtResource("1_qljh7")
+camera_follows_player = null
 camera = NodePath("FollowCamera")
 tee = NodePath("GolfTee")
 hole = NodePath("GolfHole")

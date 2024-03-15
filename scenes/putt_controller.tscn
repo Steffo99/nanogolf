@@ -10,10 +10,12 @@ max_value = 0.0
 _data = [Vector2(0, -16), 0.0, 16.0, 0, 1, Vector2(1, 0), 16.0, 0.0, 1, 0]
 point_count = 2
 
-[node name="PuttController" type="Node2D"]
+[node name="PuttController" type="Node2D" node_paths=PackedStringArray("sprite", "sound")]
 visible = false
 modulate = Color(1, 1, 1, 0.25098)
 script = ExtResource("1_rb6v1")
+sprite = NodePath("Sprite")
+sound = NodePath("Sound")
 putt_max_impulse = 333.0
 putt_drag_scale = 1.0
 putt_ghost_scale = 0.3

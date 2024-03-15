@@ -14,11 +14,10 @@ tee = NodePath("GolfTee")
 hole = NodePath("GolfHole")
 map = NodePath("TileMap")
 
-[node name="FollowCamera" parent="." node_paths=PackedStringArray("target") instance=ExtResource("1_3a7ly")]
+[node name="FollowCamera" parent="." instance=ExtResource("1_3a7ly")]
 process_callback = 0
 position_smoothing_enabled = true
 drag_vertical_enabled = true
-target = NodePath("")
 
 [node name="GolfTee" parent="." instance=ExtResource("3_6q2yk")]
 position = Vector2(0, -112)

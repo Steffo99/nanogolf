@@ -31,7 +31,8 @@ use_texture_padding = false
 
 [resource]
 tile_size = Vector2i(128, 128)
-physics_layer_0/collision_layer = 1
+physics_layer_0/collision_layer = 4
+physics_layer_0/collision_mask = 0
 sources/1 = SubResource("TileSetAtlasSource_174yq")
 sources/2 = SubResource("TileSetAtlasSource_2md10")
 sources/3 = SubResource("TileSetAtlasSource_mbu12")
