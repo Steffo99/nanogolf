@@ -21,7 +21,6 @@ fit_content = true
 
 [node name="ColorPicker" type="ColorPicker" parent="Layout"]
 layout_mode = 2
-color = Color(1, 0.996078, 0, 1)
 picker_shape = 1
 can_add_swatches = false
 sampler_visible = false
