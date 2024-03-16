@@ -5,6 +5,8 @@ class_name GolfLevel
 ## Emitted when it's time to change to the next level.
 signal level_completed
 
+## Emitted when the [GolfBall] for the local player has been spawned.
+signal local_player_spawned(ball: GolfBall)
 
 
 @export_category("Level Data")
@@ -143,15 +145,16 @@ func build_balls() -> void:
 func rpc_build_ball(player_name: String):
 	Log.peer(self, "Building tee ball for: %s" % player_name)
 	var playernode: PlayerNode = player_dir.get_playernode(player_name)
-	tee.spawn(playernode)
-
+	var ball = tee.spawn(playernode)
+	if playernode.is_multiplayer_authority():
+		local_player_spawned.emit(ball)
 
 ## Replicate the [field hole] of the [field target] to the remote [field hole].
 func build_hole() -> void:
 	Log.peer(self, "Replicating hole...")
 	var thole: GolfHole = target.hole
 	rpc_build_hole.rpc(thole.global_position, thole.global_scale)
-	
+
 ## Create the [GolfHole] object.
 @rpc("authority", "call_local", "reliable")
 func rpc_build_hole(tposition: Vector2, tscale: Vector2):

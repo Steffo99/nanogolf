@@ -24,12 +24,12 @@ func _on_playernode_name_changed(old: String, new: String, playernode: PlayerNod
 		instance.from_score(playernode)
 		instance.name = "PlayerScoreLabel__%s" % new
 
-func _on_playernode_color_changed(old: Color, new: Color, playernode: PlayerNode) -> void:
+func _on_playernode_color_changed(_old: Color, _new: Color, playernode: PlayerNode) -> void:
 	var instance = get_node_or_null("PlayerScoreLabel__%s" % playernode.player_name)
 	if instance != null:
 		instance.from_score(playernode)
 
-func _on_playernode_possessed(old: int, new: int, playernode: PlayerNode) -> void:
+func _on_playernode_possessed(_old: int, _new: int, playernode: PlayerNode) -> void:
 	var instance = get_node_or_null("PlayerScoreLabel__%s" % playernode.player_name)
 	if instance != null:
 		instance.from_score(playernode)
@@ -41,9 +41,14 @@ func _on_playernode_score_reported(strokes: int, playernode: PlayerNode) -> void
 	scores_container.add_child(score_instance)
 	scores_panel.show()
 
-func _on_playernode_scores_changed(old: Array, new: Array, playernode: PlayerNode) -> void:
+func _on_playernode_scores_changed(_old: Array, _new: Array, _playernode: PlayerNode) -> void:
 	pass
 
+func _on_local_player_spawned(ball: GolfBall, _level: GolfLevel) -> void:
+	ball.putt_controller.putt.connect(_on_putt.bind(ball))
+
+func _on_putt(_putt_vector: Vector2, ball: GolfBall) -> void:
+	strokes_label.text = "%d" % ball.strokes
 
 
 func _on_strokes_changed(strokes: int) -> void:

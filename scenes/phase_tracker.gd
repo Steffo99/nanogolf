@@ -18,9 +18,9 @@ var phase: Phase = Phase.LOBBY
 ## Change the current game phase everywhere.
 @rpc("authority", "call_local", "reliable")
 func rpc_set_phase(value: Phase):
-	Log.peer(self, "Changing phase to: %s" % value)
-	if phase != value:
-		var old: Phase = phase
+	var old: Phase = phase
+	if old != value:
+		Log.peer(self, "Changing phase to: %s" % value)
 		phase = value
 		phase_changed.emit(old, value)
 

@@ -12,6 +12,9 @@ class_name LevelManager
 @export var player_dir: PlayerNodeDirectory = null
 
 
+## Emitted when the [GolfBall] for the local player was spawned in a level.
+signal local_player_spawned(ball: GolfBall, level: GolfLevel)
+
 ## Emitted when the current level is about to be destroyed.
 signal level_destroying(level: GolfLevel)
 
@@ -62,6 +65,7 @@ func rpc_next_level():
 	# Configure the new level
 	Log.peer(self, "Configuring level variables...")
 	level.player_dir = player_dir
+	level.local_player_spawned.connect(_on_local_player_spawned)
 	level.level_completed.connect(_on_level_completed)
 	if multiplayer.is_server():
 		Log.peer(self, "Instantiating the target level scene...")
@@ -82,3 +86,8 @@ func _on_level_completed() -> void:
 	level_completed.emit(level)
 	if is_multiplayer_authority():
 		rpc_next_level.rpc()
+
+
+func _on_local_player_spawned(ball: GolfBall) -> void:
+	Log.peer(self, "Local player spawned: %s" % ball)
+	local_player_spawned.emit(ball, level)
