@@ -134,6 +134,7 @@ func check_has_entered_hole() -> bool:
 func rpc_sync_enter_hole():
 	in_hole = true
 	visible = false
+	putt_controller.can_putt = false
 	if not multiplayer.is_server():
 		hole_sound.play()
 	entered_hole.emit(strokes)
