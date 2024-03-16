@@ -44,11 +44,12 @@ func init_server_game(server_port: int) -> void:
 	
 	scene_tree.set_multiplayer(smp, ^"/root/Main/Server")
 	server_game_instance.init_signals()
+	server_game_instance.leave_confirmed.connect(_on_leave_confirmed)
 	smp.set_multiplayer_peer(peer)
 
 func deinit_server_game() -> void:
 	server_game_instance.multiplayer.multiplayer_peer = null
-	scene_tree.set_multiplayer(multiplayer, ^"/root/Main/Server")
+	scene_tree.set_multiplayer(null, ^"/root/Main/Server")
 	server_game_instance.queue_free()
 	server_game_instance = null
 
@@ -70,12 +71,12 @@ func init_client_game(player_name: String, player_color: Color, server_address: 
 	client_game_instance.local_player_name = player_name
 	client_game_instance.local_player_color = player_color
 	client_game_instance.phase_tracker.phase_changed.connect(_on_phase_changed)
+	client_game_instance.leave_confirmed.connect(_on_leave_confirmed)
 	smp.set_multiplayer_peer(peer)
 
 func deinit_client_game() -> void:
-	client_game_instance.phase_tracker.phase_changed.disconnect(_on_phase_changed)
 	client_game_instance.multiplayer.multiplayer_peer = null
-	scene_tree.set_multiplayer(multiplayer, ^"/root/Main/Client")
+	scene_tree.set_multiplayer(null, ^"/root/Main/Client")
 	client_game_instance.queue_free()
 	client_game_instance = null
 
@@ -144,9 +145,11 @@ func _on_connecting_confirmed(player_name: String, player_color: Color, server_a
 	init_lobby_menu()
 
 func _on_leave_confirmed() -> void:
-	if lobby_menu_scene:
+	if lobby_menu_instance != null:
 		deinit_lobby_menu()
-	if client_game_instance:
+	if game_hud_instance != null:
+		deinit_game_hud()
+	if client_game_instance != null:
 		deinit_client_game()
 	if server_game_instance != null:
 		deinit_server_game()

@@ -21,6 +21,10 @@ var local_player_color: Color
 @export var level_manager: LevelManager = null
 
 
+## Emitted when the player has requested to exit from the game.
+signal leave_confirmed 
+
+
 ## Initialize some signals needed by this node to function properly.
 func init_signals() -> void:
 	multiplayer.connected_to_server.connect(_on_multiplayer_connected_to_server)
@@ -38,6 +42,7 @@ func _on_multiplayer_disconnected_from_server() -> void:
 
 func _on_multiplayer_connection_failed() -> void:
 	Log.peer(self, "Connection failed...")
+	leave_confirmed.emit()
 
 func _on_multiplayer_peer_connected(peer_id: int) -> void:
 	Log.peer(self, "Peer connected: %d" % peer_id)
