@@ -48,6 +48,7 @@ func _on_multiplayer_peer_connected(peer_id: int) -> void:
 			player_dir.rpc_possess_playernode.rpc_id(peer_id, playernode.player_name, playernode.get_multiplayer_authority())
 			playernode.rpc_query_name.rpc_id(playernode.get_multiplayer_authority())
 			playernode.rpc_query_color.rpc_id(playernode.get_multiplayer_authority())
+			playernode.rpc_query_scores.rpc_id(playernode.get_multiplayer_authority())
 		peer_dir.rpc_create_peernode.rpc(peer_id)
 		phase_tracker.rpc_set_phase.rpc_id(peer_id, phase_tracker.phase)
 
@@ -85,6 +86,12 @@ func _on_playerdir_playernode_name_changed(old: String, new: String, playernode:
 func _on_playerdir_playernode_color_changed(old: Color, new: Color, playernode: PlayerNode) -> void:
 	Log.peer(self, "Playernode `%s` changed color: %s (was %s)" % [playernode.player_name, new, old])
 
+func _on_playerdir_playernode_score_reported(strokes: int, playernode: PlayerNode) -> void:
+	Log.peer(self, "Playernode `%s` reported score: %d" % [playernode.player_name, strokes])
+
+func _on_playerdir_playernode_scores_changed(old: Array, new: Array, playernode: PlayerNode) -> void:
+	Log.peer(self, "Playernode `%s` changed scores: %s (was %s)" % [playernode.player_name, new, old])
+
 func _on_playerdir_playernode_possessed(old: int, new: int, playernode: PlayerNode) -> void:
 	Log.peer(self, "Playernode `%s` possessed: %d (was %d)" % [playernode.player_name, new, old])
 	if playernode.is_multiplayer_authority() and not multiplayer.is_server():
@@ -96,3 +103,7 @@ func _on_main_start_confirmed() -> void:
 	if multiplayer.is_server():
 		phase_tracker.rpc_set_phase.rpc(PhaseTracker.Phase.PLAYING)
 		level_manager.rpc_next_level.rpc()
+
+func _on_level_manager_playlist_complete(_playlist: LevelPlaylist) -> void:
+	if multiplayer.is_server():
+		phase_tracker.rpc_set_phase.rpc(PhaseTracker.Phase.ENDED)

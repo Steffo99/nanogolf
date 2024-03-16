@@ -6,6 +6,10 @@ class_name LevelPlaylist
 @export var levels: Array[PackedScene] = []
 
 
+## Emitted when the playlist has advanced to a new level, but before it is returned by [method advanced].
+signal advanced(level: PackedScene)
+
+
 ## The index of the current level in [field levels].
 var idx: int = -1
 
@@ -17,4 +21,6 @@ func advance() -> PackedScene:
 	idx += 1
 	if idx >= len(levels):
 		return null
-	return levels[idx]
+	var level = levels[idx]
+	advanced.emit(level)
+	return level

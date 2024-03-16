@@ -6,6 +6,7 @@ class_name GolfLevel
 signal level_completed
 
 
+
 @export_category("Level Data")
 
 ## Whether the [field camera] follows the active player or not.
@@ -26,6 +27,9 @@ signal level_completed
 
 ## The [TileMap] of this level.
 @export var map: TileMap = null
+
+## If active, the [Timer] between emissions of [signal everyone_entered_hole] and [signal level_completed].
+var complete_timer: Timer = null
 
 
 ## If on server, this variable indicates the [GolfLevel] to replicate.
@@ -53,6 +57,9 @@ const hole_scene: PackedScene = preload("res://scenes/golf_hole.tscn")
 
 ## The [PackedScene] to initialize as [Camera2D].
 const camera_scene: PackedScene = preload("res://scenes/follow_camera.tscn")
+
+## The [PackedScene] to initialize as [Timer] between emissions of [signal everyone_entered_hole] and [signal level_completed].
+const complete_timer_scene: PackedScene = preload("res://scenes/complete_timer.tscn")
 
 
 ## Replicate the [field target] from the server to the clients via RPC.
@@ -193,7 +200,14 @@ func _on_playernode_created(node: Node) -> void:
 	rpc_build_ball.rpc(playernode.player_name)
 
 
-func _on_everyone_entered_hole() -> void:
+func _on_everyone_entered_hole():
+	complete_timer = complete_timer_scene.instantiate()
+	complete_timer.timeout.connect(_on_complete_timer_timeout)
+	add_child(complete_timer)
+
+
+func _on_complete_timer_timeout():
+	complete_timer.queue_free()
 	level_completed.emit()
 
 

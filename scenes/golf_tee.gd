@@ -1,7 +1,8 @@
 extends Node2D
 class_name GolfTee
 
-## Emitted when all connected [GolfBall]s have their [field GolfBall.in_hole] parameter set to true.
+
+## Emitted when all connected [GolfBall]s have entered the hole.
 signal everyone_entered_hole
 
 
@@ -19,7 +20,7 @@ func spawn(playernode: PlayerNode) -> GolfBall:
 	obj.player_name = playernode.player_name
 	obj.player_color = playernode.player_color
 	obj.set_multiplayer_authority(playernode.get_multiplayer_authority())
-	obj.putt_controller.can_putt = is_multiplayer_authority()
+	obj.putt_controller.can_putt = not multiplayer.is_server() and playernode.is_multiplayer_authority()
 	# Create callables to be able to cleanup signals on destruction
 	var on_name_changed: Callable = _on_name_changed.bind(obj)
 	var on_color_changed: Callable = _on_color_changed.bind(obj)
@@ -30,11 +31,12 @@ func spawn(playernode: PlayerNode) -> GolfBall:
 	playernode.color_changed.connect(on_color_changed)
 	playernode.possessed.connect(on_possessed)
 	obj.tree_exiting.connect(on_cleanup)
-	obj.entered_hole.connect(_on_entered_hole)
+	obj.entered_hole.connect(_on_entered_hole.bind(playernode))
 	# Add the golf ball as a child of the tee
 	add_child(obj)
 	# Return the created [GolfBall]
 	return obj
+
 
 func is_everyone_in_hole() -> bool:
 	for child in get_children():
@@ -65,6 +67,8 @@ func _on_cleanup(playernode: PlayerNode, on_name_changed: Callable, on_color_cha
 	playernode.color_changed.disconnect(on_color_changed)
 	playernode.possessed.disconnect(on_possessed)
 
-func _on_entered_hole(_strokes: int) -> void:
+func _on_entered_hole(strokes: int, playernode: PlayerNode) -> void:
+	if playernode.is_multiplayer_authority():
+		playernode.report_score(strokes)
 	if is_everyone_in_hole():
 		everyone_entered_hole.emit()

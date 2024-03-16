@@ -1,0 +1,82 @@
+[gd_scene load_steps=2 format=3 uid="uid://cfma7kdxh8jn2"]
+
+[ext_resource type="Script" path="res://scenes/game_hud.gd" id="1_x04no"]
+
+[node name="GameHUD" type="Control" node_paths=PackedStringArray("strokes_label", "scores_panel", "scores_container")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_x04no")
+strokes_label = NodePath("GridContainer/TopLeft/StrokesPanel/Margin/Label")
+scores_panel = NodePath("GridContainer/TopRight/ScoresPanel")
+scores_container = NodePath("GridContainer/TopRight/ScoresPanel/Margin/Scores")
+
+[node name="GridContainer" type="GridContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+columns = 2
+
+[node name="TopLeft" type="Control" parent="GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="StrokesPanel" type="PanelContainer" parent="GridContainer/TopLeft"]
+layout_mode = 2
+offset_right = 18.0
+offset_bottom = 31.0
+size_flags_horizontal = 0
+
+[node name="Margin" type="MarginContainer" parent="GridContainer/TopLeft/StrokesPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="Label" type="Label" parent="GridContainer/TopLeft/StrokesPanel/Margin"]
+layout_mode = 2
+text = "0"
+
+[node name="TopRight" type="Control" parent="GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ScoresPanel" type="PanelContainer" parent="GridContainer/TopRight"]
+visible = false
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -60.0
+offset_bottom = 25.0
+grow_horizontal = 0
+size_flags_horizontal = 8
+
+[node name="Margin" type="MarginContainer" parent="GridContainer/TopRight/ScoresPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="Scores" type="VBoxContainer" parent="GridContainer/TopRight/ScoresPanel/Margin"]
+layout_mode = 2
+
+[node name="BottomLeft" type="Control" parent="GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="BottomRight" type="Control" parent="GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3

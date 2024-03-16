@@ -136,7 +136,6 @@ func rpc_sync_enter_hole():
 	visible = false
 	hole_sound.play()
 	entered_hole.emit(strokes)
-	Log.peer(self, "Entered hole in: %d" % strokes)
 	
 
 
@@ -152,7 +151,7 @@ func _ready() -> void:
 
 
 func _physics_process(delta) -> void:
-	if is_multiplayer_authority():
+	if not multiplayer.is_server() and is_multiplayer_authority():
 		if not in_hole:
 			do_movement(delta)
 			rpc_sync_global_position.rpc(global_position)

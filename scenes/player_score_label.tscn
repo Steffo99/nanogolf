@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://duu2uo362yfnb"]
+
+[ext_resource type="Script" path="res://scenes/player_score_label.gd" id="1_b8kiv"]
+
+[node name="PlayerScoreLabel" type="Label"]
+size_flags_horizontal = 8
+theme_override_font_sizes/font_size = 12
+text = "Steffo - 0"
+horizontal_alignment = 2
+script = ExtResource("1_b8kiv")

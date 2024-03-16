@@ -26,6 +26,8 @@ func rpc_possess_playernode(player_name: String, peer_id: int):
 		playernode.name_changed.connect(_on_playernode_name_changed.bind(playernode))
 		playernode.color_changed.connect(_on_playernode_color_changed.bind(playernode))
 		playernode.possessed.connect(_on_playernode_possessed.bind(playernode))
+		playernode.score_reported.connect(_on_playernode_score_reported.bind(playernode))
+		playernode.scores_changed.connect(_on_playernode_scores_changed.bind(playernode))
 		var sanitized_player_name = PlayerNode.sanitize_player_name(player_name)
 		playernode.player_name = sanitized_player_name
 		playernode.name = sanitized_player_name
@@ -35,21 +37,33 @@ func rpc_possess_playernode(player_name: String, peer_id: int):
 
 
 
-func _on_playernode_name_changed(old: String, new: String, playernode: PlayerNode):
+func _on_playernode_name_changed(old: String, new: String, playernode: PlayerNode) -> void:
 	playernode_name_changed.emit(old, new, playernode)
 
-func _on_playernode_color_changed(old: Color, new: Color, playernode: PlayerNode):
+func _on_playernode_color_changed(old: Color, new: Color, playernode: PlayerNode) -> void:
 	playernode_color_changed.emit(old, new, playernode)
 
-func _on_playernode_possessed(old: int, new: int, playernode: PlayerNode):
+func _on_playernode_possessed(old: int, new: int, playernode: PlayerNode) -> void:
 	playernode_possessed.emit(old, new, playernode)
+
+func _on_playernode_score_reported(strokes: int, playernode: PlayerNode) -> void:
+	playernode_score_reported.emit(strokes, playernode)
+
+func _on_playernode_scores_changed(old: Array, new: Array, playernode: PlayerNode) -> void:
+	playernode_scores_changed.emit(old, new, playernode)
 
 
 ## Emitted when the name of one of the children [PlayerNode]s changes on the local scene.
 signal playernode_name_changed(old: String, new: String, playernode: PlayerNode)
 
-## Emitted when the name of one of the children [PlayerNode]s changes on the local scene.
+## Emitted when the color of one of the children [PlayerNode]s changes on the local scene.
 signal playernode_color_changed(old: Color, new: Color, playernode: PlayerNode)
 
 ## Emitted everywhere when one of the children [PlayerNode]s has changed multiplayer authority.
 signal playernode_possessed(old: int, new: int, playernode: PlayerNode)
+
+## Emitted when a [PlayerNode] reports a score.
+signal playernode_score_reported(strokes: int, playernode: PlayerNode)
+
+## Emitted when the scores of one of the children [PlayerNode]s change on the local scene.
+signal playernode_scores_changed(old: Array, new: Array, playernode: PlayerNode)
