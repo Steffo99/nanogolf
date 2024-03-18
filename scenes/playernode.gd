@@ -106,3 +106,8 @@ signal score_reported(strokes: int)
 
 ## Emitted when the hole scores have changed because of [method rpc_set_scores].
 signal scores_changed(old: Array, new: Array)
+
+## Emitted when a stroke has been performed on this player's [GolfBall].
+##
+## Currently tracked only for the local ball.
+signal putt_performed(ball: GolfBall)

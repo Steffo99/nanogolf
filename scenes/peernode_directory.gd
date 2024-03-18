@@ -37,6 +37,14 @@ func rpc_destroy_peernode(peer_id: int):
 	peernode.queue_free()
 
 
+func _on_peernode_created(peernode: PeerNode) -> void:
+	if peernode.is_multiplayer_authority():
+		local_peernode_created.emit(peernode)
+
+## Emitted on a client when the [PeerNode] for itself has been created.
+signal local_peernode_created(peernode: PeerNode)
+
+
 ## Called on the server when a [PeerNode] calls [method rpc_identify] for itself.
 func _on_peernode_identified(player_name: String, peernode: PeerNode):
 	peernode_identified.emit(player_name, peernode)

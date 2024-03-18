@@ -131,20 +131,22 @@ func check_has_entered_hole() -> bool:
 
 
 @rpc("authority", "call_local", "reliable")
-func rpc_sync_enter_hole():
+func rpc_do_enter_hole():
+	enter_hole()
+
+
+func enter_hole():
 	in_hole = true
-	visible = false
+	hide()
 	putt_controller.can_putt = false
 	if not multiplayer.is_server():
 		hole_sound.play()
 	entered_hole.emit(strokes)
-	
 
 
-# FIXME: What happens on the server?
 ## Push this object's [field global_position] to all other clients.
 @rpc("authority", "call_remote", "unreliable_ordered")
-func rpc_sync_global_position(nposition: Vector2):
+func rpc_set_global_position(nposition: Vector2):
 	global_position = nposition
 
 
@@ -156,9 +158,9 @@ func _physics_process(delta) -> void:
 	if not multiplayer.is_server() and is_multiplayer_authority():
 		if not in_hole:
 			do_movement(delta)
-			rpc_sync_global_position.rpc(global_position)
+			rpc_set_global_position.rpc(global_position)
 			apply_friction(delta)
 			if check_has_entered_hole():
-				rpc_sync_enter_hole.rpc()
+				rpc_do_enter_hole.rpc()
 			if check_has_stopped():
 				putt_controller.can_putt = true

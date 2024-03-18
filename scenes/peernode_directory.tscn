@@ -4,3 +4,5 @@
 
 [node name="PeerNodeDirectory" type="Node"]
 script = ExtResource("1_mc47a")
+
+[connection signal="child_entered_tree" from="." to="." method="_on_peernode_created"]

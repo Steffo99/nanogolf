@@ -44,7 +44,7 @@ func init_server_game(server_port: int) -> void:
 	
 	scene_tree.set_multiplayer(smp, ^"/root/Main/Server")
 	server_game_instance.init_signals()
-	server_game_instance.leave_confirmed.connect(_on_leave_confirmed)
+	server_game_instance.lost_connection.connect(_on_lost_connection)
 	smp.set_multiplayer_peer(peer)
 
 func deinit_server_game() -> void:
@@ -71,7 +71,7 @@ func init_client_game(player_name: String, player_color: Color, server_address: 
 	client_game_instance.local_player_name = player_name
 	client_game_instance.local_player_color = player_color
 	client_game_instance.phase_tracker.phase_changed.connect(_on_phase_changed)
-	client_game_instance.leave_confirmed.connect(_on_leave_confirmed)
+	client_game_instance.lost_connection.connect(_on_lost_connection)
 	smp.set_multiplayer_peer(peer)
 
 func deinit_client_game() -> void:
@@ -83,11 +83,11 @@ func deinit_client_game() -> void:
 func init_lobby_menu() -> void:
 	lobby_menu_instance = lobby_menu_scene.instantiate()
 	lobby_menu_instance.init_refs()
-	lobby_menu_instance.leave_confirmed.connect(_on_leave_confirmed)
+	lobby_menu_instance.leave_confirmed.connect(_on_lost_connection)
 	if server_game_instance:
 		lobby_menu_instance.start_button.disabled = false
 		lobby_menu_instance.start_confirmed.connect(server_game_instance._on_main_start_confirmed)
-	client_game_instance.multiplayer.server_disconnected.connect(_on_leave_confirmed)
+	client_game_instance.multiplayer.server_disconnected.connect(_on_lost_connection)
 	client_game_instance.player_dir.child_entered_tree.connect(lobby_menu_instance.players_list._on_playernode_created)
 	client_game_instance.player_dir.child_exiting_tree.connect(lobby_menu_instance.players_list._on_playernode_destroyed)
 	client_game_instance.player_dir.playernode_name_changed.connect(lobby_menu_instance.players_list._on_playernode_name_changed)
@@ -96,10 +96,10 @@ func init_lobby_menu() -> void:
 	interface_instance.add_child(lobby_menu_instance)
 
 func deinit_lobby_menu() -> void:
-	lobby_menu_instance.leave_confirmed.disconnect(_on_leave_confirmed)
+	lobby_menu_instance.leave_confirmed.disconnect(_on_lost_connection)
 	if server_game_instance:
 		lobby_menu_instance.start_confirmed.disconnect(server_game_instance._on_main_start_confirmed)
-	client_game_instance.multiplayer.server_disconnected.disconnect(_on_leave_confirmed)
+	client_game_instance.multiplayer.server_disconnected.disconnect(_on_lost_connection)
 	client_game_instance.player_dir.child_entered_tree.disconnect(lobby_menu_instance.players_list._on_playernode_created)
 	client_game_instance.player_dir.child_exiting_tree.disconnect(lobby_menu_instance.players_list._on_playernode_destroyed)
 	client_game_instance.player_dir.playernode_name_changed.disconnect(lobby_menu_instance.players_list._on_playernode_name_changed)
@@ -111,22 +111,22 @@ func deinit_lobby_menu() -> void:
 func init_game_hud() -> void:
 	game_hud_instance = game_hud_scene.instantiate()
 	client_game_instance.level_manager.level_completed.connect(game_hud_instance._on_level_completed)
-	client_game_instance.level_manager.local_player_spawned.connect(game_hud_instance._on_local_player_spawned)
 	client_game_instance.player_dir.playernode_name_changed.connect(game_hud_instance._on_playernode_name_changed)
 	client_game_instance.player_dir.playernode_color_changed.connect(game_hud_instance._on_playernode_color_changed)
 	client_game_instance.player_dir.playernode_possessed.connect(game_hud_instance._on_playernode_possessed)
 	client_game_instance.player_dir.playernode_score_reported.connect(game_hud_instance._on_playernode_score_reported)
 	client_game_instance.player_dir.playernode_scores_changed.connect(game_hud_instance._on_playernode_scores_changed)
+	client_game_instance.player_dir.playernode_putt_performed.connect(game_hud_instance._on_playernode_putt_performed)
 	interface_instance.add_child(game_hud_instance)
 
 func deinit_game_hud() -> void:
 	client_game_instance.level_manager.level_completed.disconnect(game_hud_instance._on_level_completed)
-	client_game_instance.level_manager.local_player_spawned.disconnect(game_hud_instance._on_local_player_spawned)
 	client_game_instance.player_dir.playernode_name_changed.disconnect(game_hud_instance._on_playernode_name_changed)
 	client_game_instance.player_dir.playernode_color_changed.disconnect(game_hud_instance._on_playernode_color_changed)
 	client_game_instance.player_dir.playernode_possessed.disconnect(game_hud_instance._on_playernode_possessed)
 	client_game_instance.player_dir.playernode_score_reported.disconnect(game_hud_instance._on_playernode_score_reported)
 	client_game_instance.player_dir.playernode_scores_changed.disconnect(game_hud_instance._on_playernode_scores_changed)
+	client_game_instance.player_dir.playernode_putt_performed.disconnect(game_hud_instance._on_playernode_putt_performed)
 	game_hud_instance.queue_free()
 	game_hud_instance = null
 
@@ -144,7 +144,7 @@ func _on_connecting_confirmed(player_name: String, player_color: Color, server_a
 	init_client_game(player_name, player_color, server_address, server_port)
 	init_lobby_menu()
 
-func _on_leave_confirmed() -> void:
+func _on_lost_connection() -> void:
 	if lobby_menu_instance != null:
 		deinit_lobby_menu()
 	if game_hud_instance != null:

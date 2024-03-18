@@ -1,12 +1,9 @@
 extends Node
 class_name Game
 
-## The name to be given to the player controlled by the local peer.
-var local_player_name: String
 
-## The color to be given to the player controlled by the local peer.
-var local_player_color: Color
 
+@export_category("References")
 
 ## The [PeerNodeDirectory] instance child of this node.
 @export var peer_dir: PeerNodeDirectory = null
@@ -21,8 +18,21 @@ var local_player_color: Color
 @export var level_manager: LevelManager = null
 
 
+
 ## Emitted when the player has requested to exit from the game.
-signal leave_confirmed 
+signal lost_connection 
+
+## Emitted when the golf ball for the local player has been spawned.
+##
+## Used for [GameHUD] events.
+signal local_player_spawned(ball: GolfBall)
+
+
+## The name to be given to the player controlled by the local peer.
+var local_player_name: String
+
+## The color to be given to the player controlled by the local peer.
+var local_player_color: Color
 
 
 ## Initialize some signals needed by this node to function properly.
@@ -42,11 +52,11 @@ func _on_multiplayer_disconnected_from_server() -> void:
 
 func _on_multiplayer_connection_failed() -> void:
 	Log.peer(self, "Connection failed...")
-	leave_confirmed.emit()
+	lost_connection.emit()
 
 func _on_multiplayer_peer_connected(peer_id: int) -> void:
 	Log.peer(self, "Peer connected: %d" % peer_id)
-	if multiplayer.is_server():
+	if is_multiplayer_authority():
 		for peernode in peer_dir.get_children():
 			peer_dir.rpc_create_peernode.rpc_id(peer_id, peernode.get_multiplayer_authority())
 		for playernode in player_dir.get_children():
@@ -55,60 +65,44 @@ func _on_multiplayer_peer_connected(peer_id: int) -> void:
 			playernode.rpc_query_color.rpc_id(playernode.get_multiplayer_authority())
 			playernode.rpc_query_scores.rpc_id(playernode.get_multiplayer_authority())
 		peer_dir.rpc_create_peernode.rpc(peer_id)
-		phase_tracker.rpc_set_phase.rpc_id(peer_id, phase_tracker.phase)
 
 func _on_multiplayer_peer_disconnected(peer_id: int) -> void:
 	Log.peer(self, "Peer disconnected: %d" % peer_id)
-	if multiplayer.is_server():
+	if is_multiplayer_authority():
 		for playernode in player_dir.get_children():
 			if playernode.get_multiplayer_authority() == peer_id:
 				player_dir.rpc_possess_playernode.rpc(playernode.player_name, 1)
 		peer_dir.rpc_destroy_peernode.rpc(peer_id)
 
 
-func _on_peerdir_peernode_created(peernode: PeerNode) -> void:
-	Log.peer(self, "Peernode created: %d" % peernode.get_multiplayer_authority())
-	if peernode.is_multiplayer_authority():
-		peernode.rpc_identify.rpc(local_player_name)
-
-func _on_peerdir_peernode_destroyed(peernode: PeerNode) -> void:
-	Log.peer(self, "Peernode destroyed: %d" % peernode.get_multiplayer_authority())
+func _on_peerdir_local_peernode_created(peernode: PeerNode) -> void:
+	Log.peer(self, "Local peernode created: %s" % peernode)
+	peernode.rpc_identify.rpc(local_player_name)
 
 func _on_peerdir_peernode_identified(player_name: String, peernode: PeerNode) -> void:
-	Log.peer(self, "Peernode identified: %d → %s" % [peernode.get_multiplayer_authority(), player_name])
-	player_dir.rpc_possess_playernode.rpc(player_name, peernode.get_multiplayer_authority())
+	Log.peer(self, "Peernode identified: %s → %s" % [peernode, player_name])
+	if is_multiplayer_authority():
+		var peer_id = peernode.get_multiplayer_authority()
+		phase_tracker.rpc_set_phase.rpc_id(peer_id, phase_tracker.phase)
+		level_manager.sync_level(peer_id)
+		player_dir.rpc_possess_playernode.rpc(player_name, peer_id)
 
 
 func _on_playerdir_playernode_created(playernode: PlayerNode) -> void:
-	Log.peer(self, "Playernode `%s` created" % playernode.player_name)
+	Log.peer(self, "Playernode created: %s" % playernode)
+	if is_multiplayer_authority():
+		level_manager.add_player(playernode)
 
-func _on_playerdir_playernode_destroyed(playernode: PlayerNode) -> void:
-	Log.peer(self, "Playernode `%s` destroyed" % playernode.player_name)
-
-func _on_playerdir_playernode_name_changed(old: String, new: String, playernode: PlayerNode) -> void:
-	Log.peer(self, "Playernode `%s` changed name: %s (was %s)" % [playernode.player_name, new, old])
-
-func _on_playerdir_playernode_color_changed(old: Color, new: Color, playernode: PlayerNode) -> void:
-	Log.peer(self, "Playernode `%s` changed color: %s (was %s)" % [playernode.player_name, new, old])
-
-func _on_playerdir_playernode_score_reported(strokes: int, playernode: PlayerNode) -> void:
-	Log.peer(self, "Playernode `%s` reported score: %d" % [playernode.player_name, strokes])
-
-func _on_playerdir_playernode_scores_changed(old: Array, new: Array, playernode: PlayerNode) -> void:
-	Log.peer(self, "Playernode `%s` changed scores: %s (was %s)" % [playernode.player_name, new, old])
-
-func _on_playerdir_playernode_possessed(old: int, new: int, playernode: PlayerNode) -> void:
-	Log.peer(self, "Playernode `%s` possessed: %d (was %d)" % [playernode.player_name, new, old])
-	if playernode.is_multiplayer_authority() and not multiplayer.is_server():
-		playernode.rpc_set_name.rpc(local_player_name)
-		playernode.rpc_set_color.rpc(local_player_color)
-
+func _on_playerdir_local_playernode_possessed(old: int, new: int, playernode: PlayerNode) -> void:
+	Log.peer(self, "Local playernode possessed: %d → %d" % [old, new])
+	playernode.rpc_set_name.rpc(local_player_name)
+	playernode.rpc_set_color.rpc(local_player_color)
 
 func _on_main_start_confirmed() -> void:
-	if multiplayer.is_server():
+	if is_multiplayer_authority():
 		phase_tracker.rpc_set_phase.rpc(PhaseTracker.Phase.PLAYING)
-		level_manager.rpc_next_level.rpc()
+		level_manager.next_level()
 
 func _on_level_manager_playlist_complete(_playlist: LevelPlaylist) -> void:
-	if multiplayer.is_server():
+	if is_multiplayer_authority():
 		phase_tracker.rpc_set_phase.rpc(PhaseTracker.Phase.ENDED)

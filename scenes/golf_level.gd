@@ -2,12 +2,6 @@ extends Node2D
 class_name GolfLevel
 
 
-## Emitted when it's time to change to the next level.
-signal level_completed
-
-## Emitted when the [GolfBall] for the local player has been spawned.
-signal local_player_spawned(ball: GolfBall)
-
 
 @export_category("Level Data")
 
@@ -30,9 +24,10 @@ signal local_player_spawned(ball: GolfBall)
 ## The [TileMap] of this level.
 @export var map: TileMap = null
 
+
+
 ## If active, the [Timer] between emissions of [signal everyone_entered_hole] and [signal level_completed].
 var complete_timer: Timer = null
-
 
 ## If on server, this variable indicates the [GolfLevel] to replicate.
 ##
@@ -65,20 +60,24 @@ const complete_timer_scene: PackedScene = preload("res://scenes/complete_timer.t
 
 
 ## Replicate the [field target] from the server to the clients via RPC.
-func build() -> void:
-	build_tilemap()
-	build_tilemap_cells()
-	build_tee()
-	build_balls()
-	build_hole()
-	build_camera()
+func build(peer_id: int = 0) -> void:
+	build_tilemap(peer_id)
+	build_tilemap_cells(peer_id)
+	build_tee(peer_id)
+	build_existing_balls(peer_id)
+	build_new_balls(peer_id)
+	build_hole(peer_id)
+	build_camera(peer_id)
 
 
 ## Replicate the [field map] of the [field target] to the remote [field map].
-func build_tilemap() -> void:
+func build_tilemap(peer_id: int = 0) -> void:
 	Log.peer(self, "Replicating map...")
 	var tmap: TileMap = target.map
-	rpc_build_tilemap.rpc(tmap.global_position, tmap.global_rotation, tmap.global_scale)
+	if peer_id > 0:
+		rpc_build_tilemap.rpc_id(peer_id, tmap.global_position, tmap.global_rotation, tmap.global_scale)
+	else:
+		rpc_build_tilemap.rpc(tmap.global_position, tmap.global_rotation, tmap.global_scale)
 
 ## Create the [field map].
 @rpc("authority", "call_local", "reliable")
@@ -90,12 +89,13 @@ func rpc_build_tilemap(tposition: Vector2, trotation: float, tscale: Vector2):
 	map.global_scale = tscale
 	add_child(map)
 
+
 ## Replicate the cells of [field target]'s [field map] to the remote [field map].
 ##
 ## The [field map] must be already created.
 ## 
 ## Only takes layer 0 into consideration.
-func build_tilemap_cells() -> void:
+func build_tilemap_cells(peer_id: int = 0) -> void:
 	Log.peer(self, "Replicating map cells...")
 	var tmap: TileMap = target.map
 	const layer = 0
@@ -103,8 +103,11 @@ func build_tilemap_cells() -> void:
 		var source_id: int = tmap.get_cell_source_id(0, coords)
 		var atlas_coords: Vector2i = tmap.get_cell_atlas_coords(0, coords)
 		var alternative_tile: int = tmap.get_cell_alternative_tile(0, coords)
-		rpc_build_tilemap_cell.rpc(layer, coords, source_id, atlas_coords, alternative_tile)
-		
+		if peer_id > 0:
+			rpc_build_tilemap_cell.rpc_id(peer_id, layer, coords, source_id, atlas_coords, alternative_tile)		
+		else:
+			rpc_build_tilemap_cell.rpc(layer, coords, source_id, atlas_coords, alternative_tile)
+
 ## Create a cell of [field map].
 @rpc("authority", "call_local", "reliable")
 func rpc_build_tilemap_cell(
@@ -119,10 +122,13 @@ func rpc_build_tilemap_cell(
 
 
 ## Replicate the [field tee] of the [field target] to the remote [field tee].
-func build_tee() -> void:
+func build_tee(peer_id: int = 0) -> void:
 	Log.peer(self, "Replicating tee...")
 	var ttee: GolfTee = target.tee
-	rpc_build_tee.rpc(ttee.global_position)
+	if peer_id > 0:
+		rpc_build_tee.rpc_id(peer_id, ttee.global_position)
+	else:
+		rpc_build_tee.rpc(ttee.global_position)
 
 ## Create the [GolfTee] object.
 @rpc("authority", "call_local", "reliable")
@@ -135,25 +141,50 @@ func rpc_build_tee(tposition: Vector2):
 
 
 ## Replicate the currently connected players' [GolfBall]s to the remote [field tee].
-func build_balls() -> void:
-	for playernode in player_dir.get_children():
-		rpc_build_ball.rpc(playernode.player_name)
+func build_existing_balls(peer_id: int = 0) -> void:
+	Log.peer(self, "Replicating existing golf balls...")
+	for tball in tee.get_children():
+		if peer_id > 0:
+			rpc_build_ball.rpc_id(peer_id, tball.name, tball.position, tball.strokes, tball.in_hole)
+		else:
+			rpc_build_ball.rpc(tball.name, tball.position, tball.strokes, tball.in_hole)
 
+func build_new_balls(peer_id: int = 0) -> void:
+	Log.peer(self, "Replicating new golf balls...")
+	for playernode in player_dir.get_children():
+		if peer_id > 0:
+			rpc_build_ball.rpc_id(peer_id, playernode.player_name, Vector2.ZERO, 0, false)
+		else:
+			rpc_build_ball.rpc(playernode.player_name, Vector2.ZERO, 0, false)
+
+## Create the specified player's [GolfBall] at the remote [field tee].
+func build_new_ball(player_name: String, peer_id: int = 0) -> void:
+	Log.peer(self, "Replicating new golf ball for: %s" % player_name)
+	if peer_id > 0:
+		rpc_build_ball.rpc_id(peer_id, player_name, Vector2.ZERO, 0, false)
+	else:
+		rpc_build_ball.rpc(player_name, Vector2.ZERO, 0, false)
 
 ## Create and initialize a [GolfBall] for a single [PlayerNode] with the given name.
 @rpc("authority", "call_local", "reliable")
-func rpc_build_ball(player_name: String):
-	Log.peer(self, "Building tee ball for: %s" % player_name)
+func rpc_build_ball(player_name: String, tposition: Vector2, tstrokes: int, thole: bool):
 	var playernode: PlayerNode = player_dir.get_playernode(player_name)
-	var ball = tee.spawn(playernode)
-	if playernode.is_multiplayer_authority():
-		local_player_spawned.emit(ball)
+	var ball: GolfBall = tee.get_golfball(playernode)
+	if ball == null:
+		Log.peer(self, "Building golf ball for: %s" % player_name)
+		ball = tee.spawn(playernode, tposition, tstrokes, thole)
+	else:
+		Log.peer(self, "Not building duplicate golf ball for: %s" % player_name)
+
 
 ## Replicate the [field hole] of the [field target] to the remote [field hole].
-func build_hole() -> void:
+func build_hole(peer_id: int = 0) -> void:
 	Log.peer(self, "Replicating hole...")
 	var thole: GolfHole = target.hole
-	rpc_build_hole.rpc(thole.global_position, thole.global_scale)
+	if peer_id > 0:
+		rpc_build_hole.rpc_id(peer_id, thole.global_position, thole.global_scale)
+	else:
+		rpc_build_hole.rpc(thole.global_position, thole.global_scale)
 
 ## Create the [GolfHole] object.
 @rpc("authority", "call_local", "reliable")
@@ -166,10 +197,13 @@ func rpc_build_hole(tposition: Vector2, tscale: Vector2):
 
 
 ## Replicate the [field camera] of the [field target] to the remote [field camera].
-func build_camera() -> void:
+func build_camera(peer_id: int = 0) -> void:
 	Log.peer(self, "Replicating camera...")
 	var tcamera: FollowCamera = target.camera
-	rpc_build_camera.rpc(tcamera.global_position, target.camera_follows_player)
+	if peer_id > 0:
+		rpc_build_camera.rpc_id(peer_id, tcamera.global_position, target.camera_follows_player)
+	else:
+		rpc_build_camera.rpc(tcamera.global_position, target.camera_follows_player)
 
 ## Create the [Camera2D] object.
 @rpc("authority", "call_local", "reliable")
@@ -185,37 +219,40 @@ func rpc_build_camera(tposition: Vector2, tfocus: bool):
 		for child in player_dir.get_children():
 			var playernode = child as PlayerNode
 			if playernode.is_multiplayer_authority():
-				var ctarget = tee.get_node("GolfBall__%s" % child.player_name)
+				var ctarget = tee.get_node(child.player_name)
 				camera.target = ctarget
 	add_child(camera)
 
 
 func _ready() -> void:
-	player_dir.child_entered_tree.connect(_on_playernode_created)
+	player_dir.local_playernode_possessed.connect(_on_local_playernode_possessed)
 	if multiplayer.is_server():
 		set_physics_process(false)
 		hide()
 
 
-func _on_playernode_created(node: Node) -> void:
-	Log.peer(self, "Spawning new player...")
-	var playernode: PlayerNode = node as PlayerNode
-	rpc_build_ball.rpc(playernode.player_name)
-
-
 func _on_everyone_entered_hole():
+	Log.peer(self, "Everyone entered hole, starting end timer...")
 	complete_timer = complete_timer_scene.instantiate()
 	complete_timer.timeout.connect(_on_complete_timer_timeout)
 	add_child(complete_timer)
 
-
 func _on_complete_timer_timeout():
-	complete_timer.queue_free()
+	Log.peer(self, "End timer has timed out, emitting level_completed signal...")
 	level_completed.emit()
+	complete_timer.queue_free()
+
+func _on_local_playernode_possessed(_old: int, new: int, playernode: PlayerNode):
+	if camera != null:
+		var ctarget = tee.get_node(playernode.player_name)
+		camera.target = ctarget
+
+
+## Emitted when it's time to change to the next level.
+signal level_completed
 
 
 func _on_tree_exiting() -> void:
-	player_dir.child_entered_tree.disconnect(_on_playernode_created)
 	if target:
 		target.queue_free()
 		target = null

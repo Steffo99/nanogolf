@@ -24,21 +24,16 @@ level_manager = NodePath("LevelManager")
 [node name="PhaseTracker" parent="." instance=ExtResource("4_kab4c")]
 
 [node name="LevelManager" parent="." node_paths=PackedStringArray("playlist", "player_dir") instance=ExtResource("5_tdqk1")]
-playlist = NodePath("LevelPlaylist")
+playlist = NodePath("../LevelPlaylist")
 player_dir = NodePath("../PlayerNodeDirectory")
 
-[node name="LevelPlaylist" parent="LevelManager" instance=ExtResource("6_bk2n3")]
+[node name="LevelPlaylist" parent="." instance=ExtResource("6_bk2n3")]
 script = ExtResource("7_akb5s")
 levels = Array[PackedScene]([ExtResource("8_h8dsk"), ExtResource("9_2kliu")])
 
-[connection signal="child_entered_tree" from="PeerNodeDirectory" to="." method="_on_peerdir_peernode_created"]
-[connection signal="child_exiting_tree" from="PeerNodeDirectory" to="." method="_on_peerdir_peernode_destroyed"]
+[connection signal="local_peernode_created" from="PeerNodeDirectory" to="." method="_on_peerdir_local_peernode_created"]
 [connection signal="peernode_identified" from="PeerNodeDirectory" to="." method="_on_peerdir_peernode_identified"]
 [connection signal="child_entered_tree" from="PlayerNodeDirectory" to="." method="_on_playerdir_playernode_created"]
-[connection signal="child_exiting_tree" from="PlayerNodeDirectory" to="." method="_on_playerdir_playernode_destroyed"]
-[connection signal="playernode_color_changed" from="PlayerNodeDirectory" to="." method="_on_playerdir_playernode_color_changed"]
-[connection signal="playernode_name_changed" from="PlayerNodeDirectory" to="." method="_on_playerdir_playernode_name_changed"]
+[connection signal="local_playernode_possessed" from="PlayerNodeDirectory" to="." method="_on_playerdir_local_playernode_possessed"]
 [connection signal="playernode_possessed" from="PlayerNodeDirectory" to="." method="_on_playerdir_playernode_possessed"]
-[connection signal="playernode_score_reported" from="PlayerNodeDirectory" to="." method="_on_playerdir_playernode_score_reported"]
-[connection signal="playernode_scores_changed" from="PlayerNodeDirectory" to="." method="_on_playerdir_playernode_scores_changed"]
 [connection signal="playlist_complete" from="LevelManager" to="." method="_on_level_manager_playlist_complete"]

@@ -28,6 +28,7 @@ func rpc_possess_playernode(player_name: String, peer_id: int):
 		playernode.possessed.connect(_on_playernode_possessed.bind(playernode))
 		playernode.score_reported.connect(_on_playernode_score_reported.bind(playernode))
 		playernode.scores_changed.connect(_on_playernode_scores_changed.bind(playernode))
+		playernode.putt_performed.connect(_on_playernode_putt_performed.bind(playernode))
 		var sanitized_player_name = PlayerNode.sanitize_player_name(player_name)
 		playernode.player_name = sanitized_player_name
 		playernode.name = sanitized_player_name
@@ -45,12 +46,17 @@ func _on_playernode_color_changed(old: Color, new: Color, playernode: PlayerNode
 
 func _on_playernode_possessed(old: int, new: int, playernode: PlayerNode) -> void:
 	playernode_possessed.emit(old, new, playernode)
+	if playernode.is_multiplayer_authority() and not multiplayer.is_server():
+		local_playernode_possessed.emit(old, new, playernode)
 
 func _on_playernode_score_reported(strokes: int, playernode: PlayerNode) -> void:
 	playernode_score_reported.emit(strokes, playernode)
 
 func _on_playernode_scores_changed(old: Array, new: Array, playernode: PlayerNode) -> void:
 	playernode_scores_changed.emit(old, new, playernode)
+
+func _on_playernode_putt_performed(ball: GolfBall, playernode: PlayerNode) -> void:
+	playernode_putt_performed.emit(ball, playernode)
 
 
 ## Emitted when the name of one of the children [PlayerNode]s changes on the local scene.
@@ -62,8 +68,14 @@ signal playernode_color_changed(old: Color, new: Color, playernode: PlayerNode)
 ## Emitted everywhere when one of the children [PlayerNode]s has changed multiplayer authority.
 signal playernode_possessed(old: int, new: int, playernode: PlayerNode)
 
+## Emitted on a client when it becomes authority of a [PlayerNode].
+signal local_playernode_possessed(old: int, new: int, playernode: PlayerNode)
+
 ## Emitted when a [PlayerNode] reports a score.
 signal playernode_score_reported(strokes: int, playernode: PlayerNode)
 
 ## Emitted when the scores of one of the children [PlayerNode]s change on the local scene.
 signal playernode_scores_changed(old: Array, new: Array, playernode: PlayerNode)
+
+## Emitted when a [PlayerNode] performs a putt on its controlled [GolfBall].
+signal playernode_putt_performed(ball: GolfBall, playernode: PlayerNode)
