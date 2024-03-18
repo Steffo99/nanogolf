@@ -1,0 +1,4 @@
+[gd_scene format=3 uid="uid://c4o6rtunoqywm"]
+
+[node name="HoleScore" type="Label"]
+text = "5"

@@ -19,6 +19,10 @@ var lobby_menu_instance: LobbyMenu = null
 const game_hud_scene: PackedScene = preload("res://scenes/game_hud.tscn")
 var game_hud_instance: GameHUD = null
 
+const results_menu_scene: PackedScene = preload("res://scenes/results_menu.tscn")
+var results_menu_instance: ResultsMenu = null
+
+
 func init_main_menu() -> void:
 	main_menu_instance = main_menu_scene.instantiate()
 	main_menu_instance.hosting_confirmed.connect(_on_hosting_confirmed)
@@ -130,6 +134,17 @@ func deinit_game_hud() -> void:
 	game_hud_instance.queue_free()
 	game_hud_instance = null
 
+func init_results_menu() -> void:
+	results_menu_instance = results_menu_scene.instantiate()
+	results_menu_instance.player_dir = client_game_instance.player_dir
+	results_menu_instance.leave_confirmed.connect(_on_lost_connection)
+	interface_instance.add_child(results_menu_instance)
+
+func deinit_results_menu() -> void:
+	results_menu_instance.queue_free()
+	results_menu_instance = null
+
+
 func _ready() -> void:
 	init_main_menu()
 
@@ -163,7 +178,7 @@ func _on_phase_changed(old: PhaseTracker.Phase, new: PhaseTracker.Phase) -> void
 		PhaseTracker.Phase.PLAYING:
 			deinit_game_hud()
 		PhaseTracker.Phase.ENDED:
-			pass  # TODO
+			deinit_results_menu()
 	# Then, initialize the new one
 	match new:
 		PhaseTracker.Phase.LOBBY:
@@ -171,4 +186,4 @@ func _on_phase_changed(old: PhaseTracker.Phase, new: PhaseTracker.Phase) -> void
 		PhaseTracker.Phase.PLAYING:
 			init_game_hud()
 		PhaseTracker.Phase.ENDED:
-			pass  # TODO
+			init_results_menu()

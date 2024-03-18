@@ -111,3 +111,4 @@ func play_putt_sound(putt_vector: Vector2):
 	var putt_impulse: float = putt_vector.length()
 	sound.volume_db = putt_volume.sample(putt_impulse / putt_max_impulse)
 	sound.play()
+
