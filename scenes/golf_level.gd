@@ -233,22 +233,24 @@ func _ready() -> void:
 
 func _on_everyone_entered_hole():
 	Log.peer(self, "Everyone entered hole, starting end timer...")
-	complete_timer = complete_timer_scene.instantiate()
-	complete_timer.timeout.connect(_on_complete_timer_timeout)
-	add_child(complete_timer)
+	if is_multiplayer_authority():
+		complete_timer = complete_timer_scene.instantiate()
+		complete_timer.timeout.connect(_on_complete_timer_timeout)
+		add_child(complete_timer)
 
 func _on_complete_timer_timeout():
 	Log.peer(self, "End timer has timed out, emitting level_completed signal...")
-	level_completed.emit()
 	complete_timer.queue_free()
+	player_dir.rpc_push_reported_scores.rpc()
+	level_completed.emit()
 
-func _on_local_playernode_possessed(_old: int, new: int, playernode: PlayerNode):
+func _on_local_playernode_possessed(_old: int, _new: int, playernode: PlayerNode):
 	if camera != null:
 		var ctarget = tee.get_node(playernode.player_name)
 		camera.target = ctarget
 
 
-## Emitted when it's time to change to the next level.
+## Emitted on the server when it's time to change to the next level.
 signal level_completed
 
 

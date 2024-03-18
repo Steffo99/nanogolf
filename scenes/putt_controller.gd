@@ -104,9 +104,9 @@ func end_putt(end_position: Vector2):
 	can_putt = false
 	var putt_vector = compute_putt(drag_start_point, end_position)
 	putt.emit(putt_vector)
-	play_putt_sound(putt_vector)
+	play_putt_sound.rpc(putt_vector)
 
-
+@rpc("authority", "call_local", "reliable")
 func play_putt_sound(putt_vector: Vector2):
 	var putt_impulse: float = putt_vector.length()
 	sound.volume_db = putt_volume.sample(putt_impulse / putt_max_impulse)

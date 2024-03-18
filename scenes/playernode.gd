@@ -58,20 +58,17 @@ func rpc_query_color():
 	if is_multiplayer_authority():
 		rpc_set_color.rpc(player_color)
 
+## The score reported for the current level.
+##
+## If the player hasn't completed the level, this should be -1.
+var reported_score: int = -1
 
-## Add a new score entry to the [field hole_scores].
-func report_score(strokes: int) -> void:
-	assert(is_multiplayer_authority())
-	rpc_report_score.rpc(strokes)
-	var tscores = hole_scores.duplicate(true)
-	tscores.push_back(strokes)
-	rpc_set_scores.rpc(tscores)
 
-## Emit [signal score_reported] everywhere.
+## Update [field reported_score] and emit [signal score_reported] everywhere.
 @rpc("authority", "call_local", "reliable")
 func rpc_report_score(strokes: int):
+	reported_score = strokes
 	score_reported.emit(strokes)
-
 
 ## Change the [field hole_scores] everywhere.
 @rpc("authority", "call_local", "reliable")

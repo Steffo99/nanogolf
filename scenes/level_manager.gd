@@ -145,6 +145,8 @@ func next_level() -> void:
 		rpc_wipe_level.rpc()
 		init_target()
 		build_level()
+	else:
+		rpc_destroy_level.rpc()
 
 
 ## Clear the current level on all clients and prepare to build a new one.
@@ -154,9 +156,22 @@ func rpc_wipe_level():
 		destroy_level()
 	initialize_level()
 
+## Clear the current level on all clients.
+@rpc("authority", "call_local", "reliable")
+func rpc_destroy_level():
+	if level != null:
+		destroy_level()
+
+
+## Emit [signal level_completed] everywhere.
+@rpc("authority", "call_local", "reliable")
+func rpc_level_completed() -> void:
+	level_completed.emit(level)
+
+
 
 func _on_level_completed() -> void:
 	Log.peer(self, "Level completed!")
-	level_completed.emit(level)
+	rpc_level_completed.rpc()
 	if is_multiplayer_authority():
 		next_level()

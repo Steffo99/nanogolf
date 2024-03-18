@@ -26,6 +26,7 @@ func spawn(playernode: PlayerNode, tposition: Vector2 = Vector2.ZERO, tstrokes: 
 	obj.player_name = playernode.player_name
 	obj.player_color = playernode.player_color
 	obj.set_multiplayer_authority(playernode.get_multiplayer_authority())
+	obj.putt_controller.set_multiplayer_authority(playernode.get_multiplayer_authority())
 	obj.putt_controller.can_putt = not multiplayer.is_server() and playernode.is_multiplayer_authority()
 	if thole:
 		obj.enter_hole()
@@ -72,6 +73,7 @@ func _on_color_changed(old: Color, new: Color, obj: GolfBall) -> void:
 func _on_possessed(old: int, new: int, obj: GolfBall) -> void:
 	Log.peer(self, "PlayerNode changed owner, updating it on GolfBall: %d → %d" % [old, new])
 	obj.set_multiplayer_authority(new)
+	obj.putt_controller.set_multiplayer_authority(new)
 	obj.putt_controller.can_putt = is_multiplayer_authority()
 	if new == 1:
 		obj.hide()
@@ -88,6 +90,6 @@ func _on_cleanup(playernode: PlayerNode, on_name_changed: Callable, on_color_cha
 
 func _on_entered_hole(strokes: int, playernode: PlayerNode) -> void:
 	if playernode.is_multiplayer_authority():
-		playernode.report_score(strokes)
+		playernode.rpc_report_score.rpc(strokes)
 	if is_everyone_in_hole():
 		everyone_entered_hole.emit()

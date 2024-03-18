@@ -3,7 +3,7 @@ class_name PlayerNodeDirectory
 
 
 ## The scene to instantiate on creation of a new [PlayerNode].
-@export var playernode_scene: PackedScene = preload("res://scenes/playernode.tscn")
+const playernode_scene: PackedScene = preload("res://scenes/playernode.tscn")
 
 
 ## Find the subordinate [PlayerNode] with the given player_name, and return it if found, otherwise return null.
@@ -32,10 +32,27 @@ func rpc_possess_playernode(player_name: String, peer_id: int):
 		var sanitized_player_name = PlayerNode.sanitize_player_name(player_name)
 		playernode.player_name = sanitized_player_name
 		playernode.name = sanitized_player_name
+		# Determine the number of holes that this player has skipped
+		var played_holes = 0
+		for othernode in get_children():
+			var othernode_played_holes = len(othernode.hole_scores)
+			if othernode_played_holes > played_holes:
+				played_holes = othernode_played_holes
+		# Fill the empty scores with -1
+		for _index in range(played_holes):
+			playernode.hole_scores.push_back(-1)
+		# Add the playernode to the SceneTree
 		add_child(playernode)
 	# If the multiplayer authority does not match the requested one, make it match
 	playernode.possess(peer_id)
 
+
+## Push the [field reported_score] of all children to the [field hole_scores] array, and reset its value to -1.
+@rpc("authority", "call_local", "reliable")
+func rpc_push_reported_scores():
+	for playernode in get_children():
+		playernode.hole_scores.push_back(playernode.reported_score)
+		playernode.reported_score = -1
 
 
 func _on_playernode_name_changed(old: String, new: String, playernode: PlayerNode) -> void:
