@@ -1,0 +1,26 @@
+[gd_scene load_steps=6 format=3 uid="uid://ctv88j1pmkbqx"]
+
+[ext_resource type="Script" path="res://scenes/golf_level.gd" id="1_fikj7"]
+[ext_resource type="PackedScene" uid="uid://c5ck3dhekpwb8" path="res://scenes/follow_camera.tscn" id="2_0j3jn"]
+[ext_resource type="PackedScene" uid="uid://c5vbxqhevocy7" path="res://scenes/golf_tee.tscn" id="3_5dr6t"]
+[ext_resource type="PackedScene" uid="uid://df7t70153a3bb" path="res://scenes/golf_hole.tscn" id="4_6bn3v"]
+[ext_resource type="PackedScene" uid="uid://dck5lkoxskrel" path="res://scenes/golf_tilemap.tscn" id="5_gmrb0"]
+
+[node name="GolfLevel" type="Node2D" node_paths=PackedStringArray("camera", "tee", "hole", "map")]
+script = ExtResource("1_fikj7")
+camera = NodePath("FollowCamera")
+tee = NodePath("GolfTee")
+hole = NodePath("GolfHole")
+map = NodePath("TileMap")
+
+[node name="FollowCamera" parent="." instance=ExtResource("2_0j3jn")]
+
+[node name="GolfTee" parent="." instance=ExtResource("3_5dr6t")]
+position = Vector2(-10, -48)
+
+[node name="GolfHole" parent="." instance=ExtResource("4_6bn3v")]
+position = Vector2(10, -93)
+scale = Vector2(1.2, 4)
+
+[node name="TileMap" parent="." instance=ExtResource("5_gmrb0")]
+layer_0/tile_data = PackedInt32Array(196615, 2, 0, 131079, 2, 0, 65543, 2, 0, 7, 2, 0, -65529, 2, 0, -327673, 2, 0, -262137, 2, 0, -196601, 2, 0, -131065, 2, 0, -524284, 2, 0, -524285, 2, 0, -524286, 2, 0, -524287, 2, 0, -524288, 2, 0, -458753, 2, 0, -458754, 2, 0, -458755, 2, 0, -458756, 2, 0, -458757, 2, 0, -262152, 2, 0, -196616, 2, 0, -131080, 2, 0, -65544, 2, 0, -8, 2, 0, 65528, 2, 0, 131064, 2, 0, 196600, 2, 0, 262136, 2, 0, -393222, 1, 0, -327687, 1, 0, -458747, 1, 268435456, -393210, 1, 268435456, -327688, 1, 805306368, -393223, 1, 805306368, -458758, 1, 805306368, -524283, 1, 536870912, -458746, 1, 536870912, -393209, 1, 536870912, 393209, 1, 536870912, 458746, 1, 536870912, 393221, 1, 805306368, 327686, 1, 805306368, 393208, 1, 268435456, 458745, 1, 268435456, 524282, 1, 268435456, 524283, 2, 0, 524284, 2, 0, 524285, 2, 0, 524286, 2, 0, 524287, 2, 0, 458752, 2, 0, 458753, 2, 0, 458754, 2, 0, 458755, 2, 0, 458756, 2, 0, 458757, 1, 0, 393222, 1, 0, 327687, 1, 0, 327672, 2, 0, 262151, 2, 0, -65537, 2, 0, -1, 2, 0, -2, 2, 0, 65534, 2, 0, 65535, 2, 0, 131071, 2, 0, 65536, 2, 0, 0, 2, 0, -65536, 2, 0, -131072, 2, 0, -65535, 2, 0, 1, 2, 0, -65538, 1, 805306368, -3, 1, 805306368, -131071, 1, 536870912, -65534, 1, 536870912, 2, 1, 0, 65537, 1, 0, 131072, 1, 0, 196607, 1, 268435456, 131070, 1, 268435456, 65533, 1, 268435456, -196608, 2, 0, -262144, 2, 0, -327681, 2, 0, -393217, 2, 0, -327680, 1, 536870912, -262145, 1, 268435456)

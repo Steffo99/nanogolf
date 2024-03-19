@@ -6,7 +6,8 @@ class_name ResultsMenu
 
 @export var results_grid: GridContainer
 
-const label_scene: PackedScene = preload("res://scenes/player_label.tscn")
+const player_label_scene: PackedScene = preload("res://scenes/player_label.tscn")
+const score_label_scene: PackedScene = preload("res://scenes/score_label.tscn")
 
 
 var player_dir: PlayerNodeDirectory = null
@@ -17,7 +18,7 @@ func _ready():
 	var max_hole_scores = 0
 
 	for playernode in player_dir.get_children():
-		var player: PlayerLabel = label_scene.instantiate()
+		var player: PlayerLabel = player_label_scene.instantiate()
 		player.set_player_name(playernode.player_name)
 		player.set_player_color(playernode.player_color)
 		player.set_possessed(playernode.get_multiplayer_authority())
@@ -26,30 +27,20 @@ func _ready():
 		max_hole_scores = max(max_hole_scores, len(playernode.hole_scores))
 		var total_score = 0
 		for hole_score in playernode.hole_scores:
-			var score: PlayerLabel = label_scene.instantiate()
-			if hole_score != -1:
-				score.text = "%d" % hole_score
-			else:
-				score.text = "-"
+			var score: ScoreLabel = score_label_scene.instantiate()
+			score.set_partial(hole_score)
 			score.set_player_color(playernode.player_color)
 			score.set_possessed(playernode.get_multiplayer_authority())
-			score.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-			score.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 			results_grid.add_child(score)
 			if hole_score == -1 or total_score == -1:
 				total_score = -1
 			else:
 				total_score += hole_score
 	
-		var total: PlayerLabel = label_scene.instantiate()
-		if total_score != -1:
-			total.text = "[%d]" % total_score
-		else:
-			total.text = "-"
+		var total: ScoreLabel = score_label_scene.instantiate()
+		total.set_total(total_score)
 		total.set_player_color(playernode.player_color)
 		total.set_possessed(playernode.get_multiplayer_authority())
-		total.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		total.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		results_grid.add_child(total)
 
 	results_grid.columns = max_hole_scores + 2

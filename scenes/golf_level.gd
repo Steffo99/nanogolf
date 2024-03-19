@@ -117,7 +117,7 @@ func rpc_build_tilemap_cell(
 	atlas_coords: Vector2i = Vector2i(-1, -1), 
 	alternative_tile: int = 0
 ):
-	Log.peer(self, "Building map cell: %s" % coords)
+	# Log.peer(self, "Building map cell: %s" % coords)
 	map.set_cell(layer, coords, source_id, atlas_coords, alternative_tile)
 
 

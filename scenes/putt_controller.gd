@@ -108,6 +108,8 @@ func end_putt(end_position: Vector2):
 
 @rpc("authority", "call_local", "reliable")
 func play_putt_sound(putt_vector: Vector2):
+	if multiplayer.is_server():
+		return
 	var putt_impulse: float = putt_vector.length()
 	sound.volume_db = putt_volume.sample(putt_impulse / putt_max_impulse)
 	sound.play()

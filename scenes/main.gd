@@ -160,10 +160,13 @@ func _on_connecting_confirmed(player_name: String, player_color: Color, server_a
 	init_lobby_menu()
 
 func _on_lost_connection() -> void:
+	print("[Main] On lost connection...")
 	if lobby_menu_instance != null:
 		deinit_lobby_menu()
 	if game_hud_instance != null:
 		deinit_game_hud()
+	if results_menu_instance != null:
+		deinit_results_menu()
 	if client_game_instance != null:
 		deinit_client_game()
 	if server_game_instance != null:

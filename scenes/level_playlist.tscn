@@ -1,3 +1,6 @@
-[gd_scene format=3 uid="uid://g03qgetpy6b5"]
+[gd_scene load_steps=2 format=3 uid="uid://g03qgetpy6b5"]
+
+[ext_resource type="Script" path="res://scenes/level_playlist.gd" id="1_gqx2w"]
 
 [node name="LevelPlaylist" type="Node"]
+script = ExtResource("1_gqx2w")

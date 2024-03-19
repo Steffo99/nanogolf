@@ -49,6 +49,7 @@ func _on_multiplayer_connected_to_server() -> void:
 
 func _on_multiplayer_disconnected_from_server() -> void:
 	Log.peer(self, "Disconnected from server.")
+	lost_connection.emit()
 
 func _on_multiplayer_connection_failed() -> void:
 	Log.peer(self, "Connection failed...")
@@ -68,7 +69,9 @@ func _on_multiplayer_peer_connected(peer_id: int) -> void:
 
 func _on_multiplayer_peer_disconnected(peer_id: int) -> void:
 	Log.peer(self, "Peer disconnected: %d" % peer_id)
-	if is_multiplayer_authority():
+	if peer_id == 1:
+		lost_connection.emit()
+	elif is_multiplayer_authority():
 		for playernode in player_dir.get_children():
 			if playernode.get_multiplayer_authority() == peer_id:
 				player_dir.rpc_possess_playernode.rpc(playernode.player_name, 1)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://dyxwp5rnxiff7"]
+[gd_scene load_steps=12 format=3 uid="uid://dyxwp5rnxiff7"]
 
 [ext_resource type="Script" path="res://scenes/game.gd" id="1_cdtng"]
 [ext_resource type="PackedScene" uid="uid://7ux0cl08c2ho" path="res://scenes/peernode_directory.tscn" id="1_p0gju"]
@@ -6,9 +6,11 @@
 [ext_resource type="PackedScene" uid="uid://dc8pe5dnk8kbv" path="res://scenes/phase_tracker.tscn" id="4_kab4c"]
 [ext_resource type="PackedScene" uid="uid://dnryhtnk21ep1" path="res://scenes/level_manager.tscn" id="5_tdqk1"]
 [ext_resource type="PackedScene" uid="uid://g03qgetpy6b5" path="res://scenes/level_playlist.tscn" id="6_bk2n3"]
-[ext_resource type="Script" path="res://scenes/level_playlist.gd" id="7_akb5s"]
 [ext_resource type="PackedScene" uid="uid://coh35s53wjxoa" path="res://scenes/golf_level_1.tscn" id="8_h8dsk"]
-[ext_resource type="PackedScene" uid="uid://dts4o84p3vj5c" path="res://scenes/golf_level_2.tscn" id="9_2kliu"]
+[ext_resource type="PackedScene" uid="uid://t4qconrxwxli" path="res://scenes/golf_level_2.tscn" id="9_2kliu"]
+[ext_resource type="PackedScene" uid="uid://ctv88j1pmkbqx" path="res://scenes/golf_level_3.tscn" id="9_5rfku"]
+[ext_resource type="PackedScene" uid="uid://bjocf7uw1bxpj" path="res://scenes/golf_level_4.tscn" id="10_hx3bj"]
+[ext_resource type="PackedScene" uid="uid://dff80nym71c6l" path="res://scenes/golf_level_5.tscn" id="11_2xagr"]
 
 [node name="Game" type="Node" node_paths=PackedStringArray("peer_dir", "player_dir", "phase_tracker", "level_manager")]
 script = ExtResource("1_cdtng")
@@ -28,8 +30,7 @@ playlist = NodePath("../LevelPlaylist")
 player_dir = NodePath("../PlayerNodeDirectory")
 
 [node name="LevelPlaylist" parent="." instance=ExtResource("6_bk2n3")]
-script = ExtResource("7_akb5s")
-levels = Array[PackedScene]([ExtResource("8_h8dsk"), ExtResource("9_2kliu")])
+levels = Array[PackedScene]([ExtResource("8_h8dsk"), ExtResource("9_2kliu"), ExtResource("9_5rfku"), ExtResource("10_hx3bj"), ExtResource("11_2xagr")])
 
 [connection signal="local_peernode_created" from="PeerNodeDirectory" to="." method="_on_peerdir_local_peernode_created"]
 [connection signal="peernode_identified" from="PeerNodeDirectory" to="." method="_on_peerdir_peernode_identified"]

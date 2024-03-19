@@ -28,6 +28,8 @@ func spawn(playernode: PlayerNode, tposition: Vector2 = Vector2.ZERO, tstrokes: 
 	obj.set_multiplayer_authority(playernode.get_multiplayer_authority())
 	obj.putt_controller.set_multiplayer_authority(playernode.get_multiplayer_authority())
 	obj.putt_controller.can_putt = not multiplayer.is_server() and playernode.is_multiplayer_authority()
+	if obj.get_multiplayer_authority() == 1:
+		obj.hide()
 	if thole:
 		obj.enter_hole()
 	# Create callables to be able to cleanup signals on destruction
