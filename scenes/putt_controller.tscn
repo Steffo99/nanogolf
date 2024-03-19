@@ -17,7 +17,7 @@ script = ExtResource("1_rb6v1")
 sprite = NodePath("Sprite")
 sound = NodePath("Sound")
 putt_max_impulse = 333.0
-putt_drag_scale = 1.0
+putt_drag_scale = 2.0
 putt_ghost_scale = 0.3
 putt_volume = SubResource("Curve_pq63d")
 
