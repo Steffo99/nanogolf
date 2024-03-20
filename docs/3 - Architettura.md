@@ -1,5 +1,1 @@
 # Architettura
-
-## Introduzione
-
-Godot
