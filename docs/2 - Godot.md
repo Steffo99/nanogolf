@@ -1,4 +1,4 @@
-# Premessa
+# Godot
 
 [Godot Engine] è un motore general purpose ed [open source] per la realizzazione di videogiochi multi-piattaforma.
 
@@ -57,6 +57,10 @@ Altri nodi possono connettersi ai segnali per effettuare dei comportamenti in ri
 
 ![I segnali messi a disposizione da GolfBall.](img/signals.png)
 
+#### Process
+
+Esistono anche due segnali speciali che non vengono mostrati dall'editor, detti ***`process(delta)`*** e ***`physics_process(delta)`***: essi vengono emessi ricorsivamente dalla radice dell'albero dei nodi a tutti i figli rispettivamente **ad ogni fotogramma disegnato a schermo** e ad ogni **quanto di tempo della simulazione fisica**.
+
 ### Script
 
 Il comportamento di ciascun nodo può essere esteso collegandoci uno ***script***, un file di codice in uno dei linguaggi supportati che viene valutato all'avvio del gioco.
@@ -68,6 +72,8 @@ Ciascuno script determina un'*estensione* ad uno dei tipi di nodo; come risultat
 Gli script possono aggiungere al nodo sia delle loro proprietà, sia dei loro segnali.
 
 ![Uno script vuoto denominato GolfHole che estende Area2D.](img/script.png)
+
+Se esistono, i metodi `_process` e `_physics_process` vengono automaticamente collegati agli omonimi segnali, permettendo l'esecuzione di codice a intervalli regolari.
 
 ## Scene
 
