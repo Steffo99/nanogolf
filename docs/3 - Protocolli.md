@@ -161,6 +161,8 @@ I canali di trasferimento attualmente disponibili sono:
 - `unreliable_ordered`, che aggiunge un contatore ad ogni pacchetto inviato tramite UDP, facendo in modo che i peer possano ignorare i pacchetti arrivati nell'ordine sbagliato;
 - `reliable`, che implementa un protocollo di acknowledgement su UDP molto simile a quello utilizzato da TCP, a costo di una latenza significativamente maggiore.
 
+> Dove non specificato, in questa relazione si assume che una RPC descritta usi sempre il canale `reliable`.
+
 ## Nodi di sincronizzazione
 
 Godot mette a disposizione dei `Node` speciali per assistere con la sincronizzazione dello stato del gioco tra tutti i peer.
