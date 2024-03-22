@@ -155,7 +155,20 @@ Inoltre, ogni volta che una `GolfBall` da esso istanziata entra nella buca, `Gol
 
 ## [`GolfBall`](../scenes/golf_ball.gd)
 
+Il `Node2D` `GolfBall` usa il segnale `possessed` di un `PlayerNode` per imitarne i cambi di `multiplayer_authority`; in condizioni di connessione normali, ogni client controlla una sua `GolfBall`.
 
+Ad ogni `physics_process`, il client che ha autorità su ciascuna `GolfBall` effettua un quanto di simulazione fisica, spostando la pallina secondo il vettore velocità salvato nella variabile `velocity` e applicando un attrito dissipativo per farla lentamente fermare.
 
+Successivamente, il client con autorità chiama `rpc_set_global_position`, una remote procedure call che sposta **su tutti i peer che non stanno eseguendo la simulazione fisica** la pallina alla posizione fornita come valore.
+
+Questa remote procedure call è l'unica in tutto il gioco che fa uso di un **canale di comunicazione diverso**: usando `unreliable_ordered`, ci si può permettere di effettuare la chiamata anche 60 volte al secondo, senza che sia un problema se alcune chiamate vengono perse, in quanto si è interessati solamente al valore più recente di posizione, e non ai valori storici che ha avuto nel passato.
+
+Infine, sempre il client con autorità controlla se l'`HoleController` della pallina è sovrapposto ad un'area di tipo `GolfHole`: in caso affermativo, viene chiamato `rpc_do_enter_hole`, in modo che la pallina entrata in buca possa riprodurre un suono ed essere nascosta su tutti i client.
+
+![](img/golfballs.png)
 
 ## [`PuttController`](../scenes/putt_controller.gd)
+
+Il `Node2D` `PuttController` infine segue i cambi di `multiplayer_authority` di `GolfBall`, e ha una singola funzione: quella di trasformare gli input del giocatore locale in un vettore che `GolfBall` possa usare per applicare un impulso alla pallina.
+
+Ha una singola RPC, `rpc_play_putt_sound`, che viene attivata ogni volta che viene terminato l'input per dare un colpo alla pallina, e riproduce un suono su tutti i client connessi.
