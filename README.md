@@ -4,7 +4,7 @@
 
 # Nanogolf
 
-Small prototype of a multiplayer minigolf game
+Compete with friends to get the best score in all five holes
 
 </div>
 
